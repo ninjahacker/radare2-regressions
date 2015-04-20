@@ -1,0 +1,20 @@
+#!/bin/sh
+for a in . .. ../.. ; do [ -e $a/tests.sh ] && . $a/tests.sh ; done
+
+NAME='PE: XhZqG.dll baddr'
+FILE=../../bins/pe/XhZqG.dll
+BROKEN=1
+ARGS=''
+CMDS="ps @ str.Priority"
+EXPECT='Priority
+'
+run_test
+
+NAME='PE: XhZqG.dll offset'
+FILE=../../bins/pe/XhZqG.dll
+BROKEN=1
+ARGS=''
+CMDS="? str.Priority"
+EXPECT='280212000 0x10b3b220 02054731040 267.2M 10b3000:0220 280212000 00100000 280212000.0 0.000000f 0.000000
+'
+run_test
