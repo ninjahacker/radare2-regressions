@@ -22,6 +22,7 @@ all:
 	@sh run_tests.sh t.formats/pdb
 	@sh run_tests.sh t.formats/mangling
 	@sh run_tests.sh t.formats/msil
+	@sh run_tests.sh t.formats/zimg	
 	@sh run_tests.sh t.pe
 	@sh run_tests.sh t.tools
 
@@ -43,7 +44,7 @@ asm:
 	@sh run_tests.sh t.asm/tms320
 	@sh run_tests.sh t.asm/x86
 	@sh run_tests.sh t.asm/z80
-	
+
 tools:
 	@sh run_tests.sh t.tools
 io:
@@ -76,7 +77,7 @@ asm.x86:
 	@sh run_tests.sh t.asm/x86
 asm.z80:
 	@sh run_tests.sh t.asm/z80
-	
+
 anal:
 	@sh run_tests.sh t.anal/arm
 	@sh run_tests.sh t.anal/java
@@ -109,6 +110,7 @@ formats:
 	@sh run_tests.sh t.formats/pdb
 	@sh run_tests.sh t.formats/mangling
 	@sh run_tests.sh t.formats/msil
+	@sh run_tests.sh t.formats/zimg
 
 format.pe:
 	@sh run_tests.sh t.formats/pe
@@ -124,7 +126,7 @@ format.pdb:
 
 format.elf:
 	@sh run_tests.sh t.formats/elf
-	
+
 format.java:
 	@sh run_tests.sh t.formats/java
 
@@ -139,7 +141,10 @@ format.xbe:
 
 format.firmware:
 	@sh run_tests.sh t.formats/firmware
-	
+
+format.zimg:
+	@sh run_tests.sh t.formats/zimg
+
 format.others:
 	@sh run_tests.sh t.formats/others
 
