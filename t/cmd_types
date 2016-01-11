@@ -4,6 +4,58 @@
 
 [ -e tests.sh ] && . ./tests.sh || . ../tests.sh
 
+NAME='te'
+BROKEN=
+FILE=-
+CMDS='
+"td enum pe_machine { IMAGE_FILE_MACHINE_IA64=0x200, IMAGE_FILE_MACHINE_I386=0x14c };"
+te pe_machine 0x14c
+'
+EXPECT='IMAGE_FILE_MACHINE_I386
+'
+run_test
+
+NAME='tb'
+BROKEN=1
+FILE=-
+CMDS='
+"td enum pe_machine { IMAGE_FILE_MACHINE_IA64=0x200, IMAGE_FILE_MACHINE_I386=0x14c };"
+tb pe_machine IMAGE_FILE_MACHINE_I386
+'
+EXPECT='0x14c
+'
+run_test
+
+NAME='t-*'
+BROKEN=1
+FILE=-
+CMDS='"td enum pe_machine { IMAGE_FILE_MACHINE_IA64=0x200, IMAGE_FILE_MACHINE_I386=0x14c };"
+t-*
+t
+'
+EXPECT=''
+run_test
+
+NAME='t-name'
+BROKEN=1
+FILE=-
+CMDS='"td enum pe_machine { IMAGE_FILE_MACHINE_IA64=0x200, IMAGE_FILE_MACHINE_I386=0x14c };"
+t-pe_machine
+t~?pe_machine
+'
+EXPECT='0
+'
+run_test
+
+NAME='t pf'
+BROKEN=1
+FILE=-
+CMDS='t uint16_t
+'
+EXPECT='w
+'
+run_test
+
 NAME='struct'
 BROKEN=
 FILE=-
@@ -11,7 +63,7 @@ CMDS='
 "td struct a{int a;int b;};"
 t~?
 '
-EXPECT='22
+EXPECT='30
 '
 run_test
 
@@ -25,7 +77,7 @@ tk v
 tk v.t
 tk v.p
 '
-EXPECT='23
+EXPECT='31
 enum
 
 0x123
@@ -45,7 +97,7 @@ t~?
 tk v.t
 tk v.p
 '
-EXPECT='23
+EXPECT='31
 0x8000000000000001
 
 0x8000000000000008
@@ -70,15 +122,23 @@ void *=type
 char=type
 char *=type
 const char*=type
+uint8_t=type
+uint16_t=type
+uint32_t=type
+uint64_t=type
 type.unsigned int=i
 type.unsigned char=b
 type.unsigned short=w
 type.int=d
 type.long=x
 type.void *=p
-type.char=x
+type.char=b
 type.char *=*z
 type.const char*=*z
+type.uint8_t=b
+type.uint16_t=w
+type.uint32_t=d
+type.uint64_t=q
 name=struct
 struct.name=first,middle,last
 struct.name.first=char *,0,40
@@ -100,5 +160,22 @@ struct.dox.address=struct addr,0,0
 struct.dox.name=struct name,172,0
 struct.dox.bday=struct date,292,0
 pf *z*zi street city zip 
+'
+run_test
+
+
+NAME='tl, tf test on structure'
+FILE=-
+CMDS='"td typedef struct name { char name[10]; }"
+s 100
+w Carlos
+s 0
+wx 0x00000064
+tl name @ 0x0
+tf 0x0
+'
+EXPECT='struct name {
+name : (*0x64) 0x00000000 = Carlos
+}
 '
 run_test

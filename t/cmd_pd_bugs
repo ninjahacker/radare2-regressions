@@ -1,0 +1,55 @@
+#!/bin/sh
+
+[ -e tests.sh ] && . ./tests.sh || . ../tests.sh
+
+NAME='pd call sym bug'
+FILE=../bins/mach0/hello-objc-arm
+BROKEN=
+ARGS=
+CMDS='
+e asm.lines=0
+e asm.bytes=0
+e asm.comments=0
+s sym.__Test_callMeNot_
+pd 20~?NSLog
+af
+pd 20~?NSLog
+'
+EXPECT="1
+1
+"
+run_test
+
+NAME='pd call sym bug'
+FILE=../bins/mach0/hello-objc-arm
+BROKEN=1
+ARGS=
+CMDS='
+e asm.lines=0
+e asm.bytes=0
+e asm.comments=0
+s sym.__Test_callMeNot_
+# s+2
+pi 2
+'
+EXPECT="mov r7, sp
+sub sp, 8
+"
+run_test
+
+NAME='call fcn eip'
+FILE=../bins/elf/ls-alxchk
+BROKEN=
+ARGS=
+CMDS='
+s 0x5e50
+af; afn eip
+pd 1 @ 0x5f16~:0
+e asm.lines=0
+e asm.bytes=0
+e asm.comments=0
+'
+EXPECT="|           0x00005f16      e835ffffff     call fcn.eip
+"
+run_test
+

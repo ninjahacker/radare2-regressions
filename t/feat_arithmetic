@@ -1,10 +1,20 @@
 #!/bin/sh
 
-# GPL 3+ - Copyright (C) 2011-2012  pancake, Edd Barrett, Simon Ruderich
+# GPL 3+ - Copyright (C) 2011-2015  pancake, Edd Barrett, Simon Ruderich
 
 [ -e tests.sh ] && . ./tests.sh || . ../tests.sh
 
 ## Arithmetic expressions
+
+NAME='use after free - requires asan'
+FILE=malloc://1024
+ARGS=
+CMDS='
+0
+~[[0
+'
+EXPECT=''
+run_test
 
 NAME='sum flags'
 FILE=malloc://1024

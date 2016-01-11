@@ -10,7 +10,7 @@ e anal.hasnext=0
 e anal.eobjmp=false
 e asm.arch=x86
 e asm.bits=32
-wx 6a00 4889e5 c3 
+wx 6a00 4889e5 c3
 af
 afl~[1]
 '
@@ -19,7 +19,26 @@ EXPECT='6
 run_test
 
 # test if function analysis works in ujmp
-NAME='af x86-32 ujmp eob'
+NAME='af x86-32 ujmp eobjmp=true'
+FILE=malloc://1024
+BROKEN=
+ARGS=
+CMDS='
+e anal.hasnext=0
+e asm.arch=x86
+e anal.eobjmp=true
+e asm.bits=32
+wx 6a00 4889e5 ff25f8120000 ff25f8120000ffe0c3
+af
+afl~[1]
+'
+EXPECT='11
+'
+IGNORE_ERR=1
+run_test
+
+# test if function analysis works in ujmp
+NAME='af x86-32 ujmp eobjmp=false'
 FILE=malloc://1024
 BROKEN=
 ARGS=
@@ -32,7 +51,7 @@ wx 6a00 4889e5 ff25f8120000 ff25f8120000ffe0c3
 af
 afl~[1]
 '
-EXPECT='11
+EXPECT='20
 '
 IGNORE_ERR=1
 run_test
@@ -134,13 +153,14 @@ IGNORE_ERR=0
 
 NAME='sym is not fcn'
 FILE=../../bins/mach0/mach0-i386
-BROKEN=1
+BROKEN=
+IGNORE_ERR=1
 ARGS=
 CMDS='
 aa > /dev/null
-afl~sym.__mh_execute_header
+afl~sym.__mh_execute_header[0]
 '
-EXPECT='0x00001000  313  9  sym.__mh_execute_header
+EXPECT='0x00001000
 '
 run_test
 
@@ -188,15 +208,79 @@ EXPECT='0x00001f80  41  1  sym._main
 run_test
 
 
-NAME='function preludes'
+NAME='function prelude offsets'
+FILE=../../bins/mach0/mach0-i386
+BROKEN=
+CMDS='s 0x1000
+aap
+afl~[0]
+'
+EXPECT='0x00001f00
+0x00001f50
+0x00001f80
+'
+run_test
+
+NAME='function preludes symbol names'
 FILE=../../bins/mach0/mach0-i386
 BROKEN=1
 CMDS='s 0x1000
-ap
+aap
 afl
 '
-EXPECT='0x00001f00  73  3  sym._bar
+EXPECT='0x00001f00  73  4  sym._bar
 0x00001f50  47  1  sym._foo
 0x00001f80  41  1  sym._main
 '
+run_test
+
+NAME='af afF'
+FILE=malloc://1024
+ARGS=
+CMDS='
+e anal.hasnext=0
+e anal.eobjmp=false
+e asm.arch=x86
+e asm.bits=32
+wx 6a004889e5c3
+af test
+afF
+pd 1 @ fcn.test
+'
+EXPECT='/ (fcn) fcn.test
+\           0x00000000 (6 byte folded function)
+'
+run_test
+
+NAME='af afF graph'
+FILE=malloc://1024
+ARGS=
+CMDS='
+e anal.hasnext=0
+e anal.eobjmp=false
+e asm.arch=x86
+e asm.bits=32
+wx 6a004889e5c3
+af test
+afF
+agf
+'
+EXPECT='[0x00000000]> VV @ fcn.test (nodes 1 edges 0 zoom 100%) BB-NORM mouse:canvas-y movements-speed:5
+=---------------------------=
+|  0x0                      |
+| / (fcn) fcn.test          |
+| (6 byte folded function)  |
+=---------------------------=
+'
+run_test
+
+NAME='af-*'
+FILE=../../bins/elf/main
+ARGS=
+CMDS='
+aa
+af-*
+afl
+'
+EXPECT=''
 run_test

@@ -3,6 +3,17 @@
 
 [ -e tests.sh ] && . ./tests.sh || . ../tests.sh
 
+NAME='$B (fcn-begin)'
+FILE=malloc://1024
+ARGS=
+CMDS='s 42
+af
+s 44
+s $B
+s'
+EXPECT='0x2a
+'
+run_test
 
 NAME='$$ (malloc)'
 FILE=malloc://1024
@@ -203,5 +214,25 @@ ARGS=
 CMDS='?v $s
 '
 EXPECT='0xfc
+'
+run_test
+
+NAME='?p and ?P'
+FILE=../bins/elf/simple.elf
+CMDS='?p 0x08000060
+?P 0x00000060
+'
+EXPECT='0x00000060
+0x08000060
+'
+run_test
+
+NAME='?p and ?P'
+FILE=../bins/elf/simple.elf
+CMDS='?p 0xdeadbeef
+?P 0xdeadbeef
+'
+EXPECT='0xffffffffffffffff
+0xffffffffffffffff
 '
 run_test

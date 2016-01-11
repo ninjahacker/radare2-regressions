@@ -1,0 +1,58 @@
+#!/bin/bash
+
+for a in . .. ../.. ; do [ -e $a/tests.sh ] && . $a/tests.sh ; done
+
+NAME="ELF ARM: function names"
+BROKEN=
+FILE=../../bins/elf/arm_32_flags0
+CMDS='
+aa
+afl~abort
+'
+EXPECT='0x000102bc  12  1  sym.imp.abort
+'
+run_test
+
+NAME="ELF ARM: function names 2"
+BROKEN=
+FILE=../../bins/elf/arm_32_flags0
+CMDS='
+aa
+afl~weak
+'
+EXPECT='0x00010304  24  1  sym.call_weak_fn
+'
+run_test
+
+NAME="ELF ARM: function names 2"
+BROKEN=
+FILE=../../bins/elf/arm_32_flags0
+CMDS='
+af @@ sym*
+afl~weak
+'
+EXPECT='0x00010304  24  1  sym.call_weak_fn
+'
+run_test
+
+NAME="ELF ARM: aa"
+BROKEN=
+FILE=../../bins/elf/arm_32_flags0
+CMDS='
+aa
+afl~?
+'
+EXPECT='15
+'
+run_test
+
+NAME="ELF ARM: af @@ sym.*"
+BROKEN=
+FILE=../../bins/elf/arm_32_flags0
+CMDS='
+af @@ sym.*
+afl~?
+'
+EXPECT='15
+'
+run_test

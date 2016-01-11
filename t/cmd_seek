@@ -43,3 +43,32 @@ EXPECT='0x4
 0x4
 '
 run_test
+
+NAME='seek line'
+FILE=../bins/mach0/mac-ls
+ARGS=
+CMDS='
+sl 1; ?v $$
+e lines.from=0x100002000
+e lines.to=0x100004000
+sl 9
+sl
+sl+1
+sl
+sl-2
+sl
+sl 999999999999
+sl
+sl 0
+sl
+sl 1; ?v $$
+'
+EXPECT='0x100000000
+9
+10
+8
+8
+8
+0x1000025a3
+'
+run_test

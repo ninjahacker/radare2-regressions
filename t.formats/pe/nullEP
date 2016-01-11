@@ -13,10 +13,13 @@ NAME='PE: nullEP - entrypoint'
 FILE=../../bins/pe/nullEP.exe
 IGNORE_ERR=1
 BROKEN=1
-ARGS='-n'
-CMDS="!rabin2 -eq ${FILE} "
+ARGS=''
+CMDS='!rabin2 -eq ${FILE}
+pi 1 @ `?v entry0`
+'
 
-EXPECT='0x00000000
+EXPECT='0x00400000
+dec ebp
 '
 
 run_test

@@ -1,0 +1,23 @@
+#!/bin/sh
+for a in . .. ../.. ; do [ -e $a/tests.sh ] && . $a/tests.sh ; done
+
+fuzz_test() {
+	NAME="MACH0: fuzzed $1"
+	FILE=$2
+	BROKEN=$3
+	ARGS=
+	CMDS="q"
+	EXPECT=''
+	run_test
+}
+
+COUNT=0
+for i in ../../bins/mach0/machfuzzed/mach*; do
+	fuzz_test $COUNT $i
+done
+
+fuzz_test RsFuzz ../../bins/mach0/rsfuzz-3b3a5a268
+fuzz_test RsFuzz2 ../../bins/mach0/machfuzzed/45d2d1309807e95422006abb97462bc6
+fuzz_test RsFuzz3 ../../bins/mach0/machfuzzed/06ff0c01a02aaccae1d0f272f43263c0
+fuzz_test RsFuzz4 ../../bins/mach0/machfuzzed/55c9c9a630790dbe432da1ff577271f1
+fuzz_test RsFuzz5 ../../bins/mach0/machfuzzed/ab88f42f9b4afceb8137f20cd1e97839

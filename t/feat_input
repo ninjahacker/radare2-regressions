@@ -13,7 +13,8 @@ CMDS='
 # The test suite is not allowed to interpret the output!
 ?e \n
 '
-EXPECT='\n
+EXPECT='
+
 '
 run_test newline
 

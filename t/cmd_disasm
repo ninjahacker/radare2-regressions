@@ -61,3 +61,46 @@ run_test
 #rasm2 -o 0xfffaa -d e99300 -b16
 #rasm2 -o 0xb77c8192 -d 0e869390000 -b32
 #rasm2 -o 0x7629523a55e3 -d e828350000 -b64
+
+NAME='unaligned arm code'
+FILE=-
+ARGS=
+CMDS='
+wx 00000000
+e asm.bits=16
+e asm.arch=arm
+pi 1 @ 1
+'
+EXPECT='unaligned
+'
+run_test
+
+NAME='unaligned arm code'
+FILE=-
+ARGS=
+CMDS='
+wx 00000000
+e asm.bits=32
+e asm.arch=arm
+pi 1 @ 2
+'
+EXPECT='unaligned
+'
+run_test
+
+NAME='unaligned x86 issue'
+FILE=-
+ARGS=
+CMDS='
+wx 00000000
+e asm.bits=16
+e asm.arch=arm
+pi 2
+e asm.arch=x86
+pi 1 @ 1
+'
+EXPECT='movs r0, r0
+movs r0, r0
+add byte [bx + si], al
+'
+run_test

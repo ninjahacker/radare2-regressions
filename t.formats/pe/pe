@@ -1,13 +1,12 @@
 #!/bin/sh
 
-# GPL 3+ - Copyright (C) 2013  pancake
+# GPL 3+ - Copyright (C) 2013-2015  pancake
 
 for a in . .. ../.. ; do [ -e $a/tests.sh ] && . $a/tests.sh ; done
 F=../../bins/pe/base.exe
 
 NAME='pe entrypoint'
 IGNORE_ERR=1
-BROKEN=1
 FILE=$F
 ARGS=
 CMDS='ie~addr
@@ -18,12 +17,11 @@ run_test
 
 NAME='pe relocs [r2]'
 IGNORE_ERR=1
-BROKEN=
 FILE=$F
 ARGS=
 CMDS='e asm.functions = false
 e asm.flags = false
-pd 1@0x401820~!reloc
+pd 1@0x401820~!imp
 '
 EXPECT=''
 run_test
@@ -129,7 +127,7 @@ e asm.bytes=false
 e asm.comments=false
 pd 1@0x0040131a~str.Hello
 '
-EXPECT=' 0x0040131a   mov dword [esp], str.Hello_n
+EXPECT=' 0x0040131a      mov dword [esp], str.Hello_n
 '
 run_test
 
@@ -162,132 +160,132 @@ ARGS=
 CMDS='ii
 '
 EXPECT='[Imports]
-ordinal=001 plt=0x0001217c bind=NONE type=FUNC name=kernel32.dll_DeleteCriticalSection
-ordinal=002 plt=0x00012180 bind=NONE type=FUNC name=kernel32.dll_LeaveCriticalSection
-ordinal=003 plt=0x00012184 bind=NONE type=FUNC name=kernel32.dll_EnterCriticalSection
-ordinal=004 plt=0x00012188 bind=NONE type=FUNC name=kernel32.dll_InitializeCriticalSection
-ordinal=005 plt=0x0001218c bind=NONE type=FUNC name=kernel32.dll_VirtualFree
-ordinal=006 plt=0x00012190 bind=NONE type=FUNC name=kernel32.dll_VirtualAlloc
-ordinal=007 plt=0x00012194 bind=NONE type=FUNC name=kernel32.dll_LocalFree
-ordinal=008 plt=0x00012198 bind=NONE type=FUNC name=kernel32.dll_LocalAlloc
-ordinal=009 plt=0x0001219c bind=NONE type=FUNC name=kernel32.dll_GetVersion
-ordinal=010 plt=0x000121a0 bind=NONE type=FUNC name=kernel32.dll_GetCurrentThreadId
-ordinal=011 plt=0x000121a4 bind=NONE type=FUNC name=kernel32.dll_WideCharToMultiByte
-ordinal=012 plt=0x000121a8 bind=NONE type=FUNC name=kernel32.dll_MultiByteToWideChar
-ordinal=013 plt=0x000121ac bind=NONE type=FUNC name=kernel32.dll_GetThreadLocale
-ordinal=014 plt=0x000121b0 bind=NONE type=FUNC name=kernel32.dll_GetStartupInfoA
-ordinal=015 plt=0x000121b4 bind=NONE type=FUNC name=kernel32.dll_GetModuleFileNameA
-ordinal=016 plt=0x000121b8 bind=NONE type=FUNC name=kernel32.dll_GetLocaleInfoA
-ordinal=017 plt=0x000121bc bind=NONE type=FUNC name=kernel32.dll_GetCommandLineA
-ordinal=018 plt=0x000121c0 bind=NONE type=FUNC name=kernel32.dll_FreeLibrary
-ordinal=019 plt=0x000121c4 bind=NONE type=FUNC name=kernel32.dll_ExitProcess
-ordinal=020 plt=0x000121c8 bind=NONE type=FUNC name=kernel32.dll_WriteFile
-ordinal=021 plt=0x000121cc bind=NONE type=FUNC name=kernel32.dll_UnhandledExceptionFilter
-ordinal=022 plt=0x000121d0 bind=NONE type=FUNC name=kernel32.dll_RtlUnwind
-ordinal=023 plt=0x000121d4 bind=NONE type=FUNC name=kernel32.dll_RaiseException
-ordinal=024 plt=0x000121d8 bind=NONE type=FUNC name=kernel32.dll_GetStdHandle
-ordinal=001 plt=0x000121e0 bind=NONE type=FUNC name=user32.dll_GetKeyboardType
-ordinal=002 plt=0x000121e4 bind=NONE type=FUNC name=user32.dll_MessageBoxA
-ordinal=003 plt=0x000121e8 bind=NONE type=FUNC name=user32.dll_CharNextA
-ordinal=001 plt=0x000121f0 bind=NONE type=FUNC name=advapi32.dll_RegQueryValueExA
-ordinal=002 plt=0x000121f4 bind=NONE type=FUNC name=advapi32.dll_RegOpenKeyExA
-ordinal=003 plt=0x000121f8 bind=NONE type=FUNC name=advapi32.dll_RegCloseKey
-ordinal=001 plt=0x00012200 bind=NONE type=FUNC name=oleaut32.dll_SysFreeString
-ordinal=002 plt=0x00012204 bind=NONE type=FUNC name=oleaut32.dll_SysReAllocStringLen
-ordinal=003 plt=0x00012208 bind=NONE type=FUNC name=oleaut32.dll_SysAllocStringLen
-ordinal=001 plt=0x00012210 bind=NONE type=FUNC name=kernel32.dll_TlsSetValue
-ordinal=002 plt=0x00012214 bind=NONE type=FUNC name=kernel32.dll_TlsGetValue
-ordinal=003 plt=0x00012198 bind=NONE type=FUNC name=kernel32.dll_LocalAlloc
-ordinal=004 plt=0x0001221c bind=NONE type=FUNC name=kernel32.dll_GetModuleHandleA
-ordinal=001 plt=0x00012224 bind=NONE type=FUNC name=advapi32.dll_RegSetValueExA
-ordinal=002 plt=0x000121f0 bind=NONE type=FUNC name=advapi32.dll_RegQueryValueExA
-ordinal=003 plt=0x000121f4 bind=NONE type=FUNC name=advapi32.dll_RegOpenKeyExA
-ordinal=004 plt=0x00012230 bind=NONE type=FUNC name=advapi32.dll_RegEnumValueA
-ordinal=005 plt=0x00012234 bind=NONE type=FUNC name=advapi32.dll_RegDeleteKeyA
-ordinal=006 plt=0x00012238 bind=NONE type=FUNC name=advapi32.dll_RegCreateKeyExA
-ordinal=007 plt=0x0001223c bind=NONE type=FUNC name=advapi32.dll_RegCreateKeyA
-ordinal=008 plt=0x000121f8 bind=NONE type=FUNC name=advapi32.dll_RegCloseKey
-ordinal=009 plt=0x00012244 bind=NONE type=FUNC name=advapi32.dll_OpenProcessToken
-ordinal=010 plt=0x00012248 bind=NONE type=FUNC name=advapi32.dll_LookupAccountNameA
-ordinal=011 plt=0x0001224c bind=NONE type=FUNC name=advapi32.dll_IsValidSid
-ordinal=012 plt=0x00012250 bind=NONE type=FUNC name=advapi32.dll_GetUserNameA
-ordinal=001 plt=0x00012258 bind=NONE type=FUNC name=kernel32.dll_lstrlenA
-ordinal=002 plt=0x0001225c bind=NONE type=FUNC name=kernel32.dll_lstrcmpiA
-ordinal=003 plt=0x00012260 bind=NONE type=FUNC name=kernel32.dll_WriteProcessMemory
-ordinal=004 plt=0x000121c8 bind=NONE type=FUNC name=kernel32.dll_WriteFile
-ordinal=005 plt=0x00012268 bind=NONE type=FUNC name=kernel32.dll_WaitForSingleObject
-ordinal=006 plt=0x0001226c bind=NONE type=FUNC name=kernel32.dll_VirtualProtect
-ordinal=007 plt=0x0001218c bind=NONE type=FUNC name=kernel32.dll_VirtualFree
-ordinal=008 plt=0x00012274 bind=NONE type=FUNC name=kernel32.dll_VirtualAllocEx
-ordinal=009 plt=0x00012190 bind=NONE type=FUNC name=kernel32.dll_VirtualAlloc
-ordinal=010 plt=0x0001227c bind=NONE type=FUNC name=kernel32.dll_Sleep
-ordinal=011 plt=0x00012280 bind=NONE type=FUNC name=kernel32.dll_SizeofResource
-ordinal=012 plt=0x00012284 bind=NONE type=FUNC name=kernel32.dll_SetFilePointer
-ordinal=013 plt=0x00012288 bind=NONE type=FUNC name=kernel32.dll_SetFileAttributesA
-ordinal=014 plt=0x0001228c bind=NONE type=FUNC name=kernel32.dll_ReadProcessMemory
-ordinal=015 plt=0x00012290 bind=NONE type=FUNC name=kernel32.dll_ReadFile
-ordinal=016 plt=0x00012294 bind=NONE type=FUNC name=kernel32.dll_OpenProcess
-ordinal=017 plt=0x00012298 bind=NONE type=FUNC name=kernel32.dll_LockResource
-ordinal=018 plt=0x0001229c bind=NONE type=FUNC name=kernel32.dll_LoadResource
-ordinal=019 plt=0x000122a0 bind=NONE type=FUNC name=kernel32.dll_LoadLibraryA
-ordinal=020 plt=0x000122a4 bind=NONE type=FUNC name=kernel32.dll_GlobalFree
-ordinal=021 plt=0x000122a8 bind=NONE type=FUNC name=kernel32.dll_GetVersionExA
-ordinal=022 plt=0x000122ac bind=NONE type=FUNC name=kernel32.dll_GetTickCount
-ordinal=023 plt=0x000122b0 bind=NONE type=FUNC name=kernel32.dll_GetProcAddress
-ordinal=024 plt=0x000122b4 bind=NONE type=FUNC name=kernel32.dll_GetPrivateProfileStringA
-ordinal=025 plt=0x000122b8 bind=NONE type=FUNC name=kernel32.dll_GetPrivateProfileIntA
-ordinal=026 plt=0x0001221c bind=NONE type=FUNC name=kernel32.dll_GetModuleHandleA
-ordinal=027 plt=0x000122c0 bind=NONE type=FUNC name=kernel32.dll_GetLastError
-ordinal=028 plt=0x000122c4 bind=NONE type=FUNC name=kernel32.dll_GetFileSize
-ordinal=029 plt=0x000122c8 bind=NONE type=FUNC name=kernel32.dll_GetFileAttributesA
-ordinal=030 plt=0x000122cc bind=NONE type=FUNC name=kernel32.dll_GetExitCodeThread
-ordinal=031 plt=0x000122d0 bind=NONE type=FUNC name=kernel32.dll_GetCurrentProcess
-ordinal=032 plt=0x000122d4 bind=NONE type=FUNC name=kernel32.dll_FreeResource
-ordinal=033 plt=0x000121c0 bind=NONE type=FUNC name=kernel32.dll_FreeLibrary
-ordinal=034 plt=0x000122dc bind=NONE type=FUNC name=kernel32.dll_FindResourceA
-ordinal=035 plt=0x000122e0 bind=NONE type=FUNC name=kernel32.dll_FindFirstFileA
-ordinal=036 plt=0x000122e4 bind=NONE type=FUNC name=kernel32.dll_FindClose
-ordinal=037 plt=0x000121c4 bind=NONE type=FUNC name=kernel32.dll_ExitProcess
-ordinal=038 plt=0x000122ec bind=NONE type=FUNC name=kernel32.dll_DeleteFileA
-ordinal=039 plt=0x000122f0 bind=NONE type=FUNC name=kernel32.dll_CreateRemoteThread
-ordinal=040 plt=0x000122f4 bind=NONE type=FUNC name=kernel32.dll_CreateProcessA
-ordinal=041 plt=0x000122f8 bind=NONE type=FUNC name=kernel32.dll_CreateMutexA
-ordinal=042 plt=0x000122fc bind=NONE type=FUNC name=kernel32.dll_CreateFileA
-ordinal=043 plt=0x00012300 bind=NONE type=FUNC name=kernel32.dll_CreateDirectoryA
-ordinal=044 plt=0x00012304 bind=NONE type=FUNC name=kernel32.dll_CopyFileA
-ordinal=045 plt=0x00012308 bind=NONE type=FUNC name=kernel32.dll_CloseHandle
-ordinal=001 plt=0x00012310 bind=NONE type=FUNC name=user32.dll_wvsprintfA
-ordinal=002 plt=0x00012314 bind=NONE type=FUNC name=user32.dll_TranslateMessage
-ordinal=003 plt=0x00012318 bind=NONE type=FUNC name=user32.dll_ToAscii
-ordinal=004 plt=0x0001231c bind=NONE type=FUNC name=user32.dll_SetWindowsHookExA
-ordinal=005 plt=0x00012320 bind=NONE type=FUNC name=user32.dll_PeekMessageA
-ordinal=006 plt=0x00012324 bind=NONE type=FUNC name=user32.dll_GetWindowThreadProcessId
-ordinal=007 plt=0x00012328 bind=NONE type=FUNC name=user32.dll_GetKeyboardState
-ordinal=008 plt=0x0001232c bind=NONE type=FUNC name=user32.dll_FindWindowA
-ordinal=009 plt=0x00012330 bind=NONE type=FUNC name=user32.dll_DispatchMessageA
-ordinal=010 plt=0x00012334 bind=NONE type=FUNC name=user32.dll_CharLowerA
-ordinal=011 plt=0x00012338 bind=NONE type=FUNC name=user32.dll_CharUpperA
-ordinal=001 plt=0x00012340 bind=NONE type=FUNC name=ole32.dll_OleInitialize
-ordinal=002 plt=0x00012344 bind=NONE type=FUNC name=ole32.dll_CoCreateInstance
-ordinal=001 plt=0x0001234c bind=NONE type=FUNC name=ole32.dll_CoTaskMemFree
-ordinal=001 plt=0x00012354 bind=NONE type=FUNC name=pstorec.dll_PStoreCreateInstance
-ordinal=001 plt=0x0001235c bind=NONE type=FUNC name=ole32.dll_StringFromCLSID
-ordinal=001 plt=0x00012364 bind=NONE type=FUNC name=rasapi32.dll_RasGetEntryDialParamsA
-ordinal=002 plt=0x00012368 bind=NONE type=FUNC name=rasapi32.dll_RasEnumEntriesA
-ordinal=001 plt=0x00012370 bind=NONE type=FUNC name=shell32.dll_SHGetSpecialFolderPathA
-ordinal=001 plt=0x00012378 bind=NONE type=FUNC name=advapi32.dll_LsaFreeMemory
-ordinal=002 plt=0x0001237c bind=NONE type=FUNC name=advapi32.dll_LsaClose
-ordinal=003 plt=0x00012380 bind=NONE type=FUNC name=advapi32.dll_LsaRetrievePrivateData
-ordinal=004 plt=0x00012384 bind=NONE type=FUNC name=advapi32.dll_LsaOpenPolicy
-ordinal=005 plt=0x00012388 bind=NONE type=FUNC name=advapi32.dll_ConvertSidToStringSidA
-ordinal=001 plt=0x00012390 bind=NONE type=FUNC name=crypt32.dll_CryptUnprotectData
-ordinal=001 plt=0x00012398 bind=NONE type=FUNC name=advapi32.dll_CredEnumerateA
-ordinal=001 plt=0x000123a0 bind=NONE type=FUNC name=advapi32.dll_CryptDestroyHash
-ordinal=002 plt=0x000123a4 bind=NONE type=FUNC name=advapi32.dll_CryptHashData
-ordinal=003 plt=0x000123a8 bind=NONE type=FUNC name=advapi32.dll_CryptCreateHash
-ordinal=004 plt=0x000123ac bind=NONE type=FUNC name=advapi32.dll_CryptGetHashParam
-ordinal=005 plt=0x000123b0 bind=NONE type=FUNC name=advapi32.dll_CryptReleaseContext
-ordinal=006 plt=0x000123b4 bind=NONE type=FUNC name=advapi32.dll_CryptAcquireContextA
+ordinal=001 plt=0x0041217c bind=NONE type=FUNC name=kernel32.dll_DeleteCriticalSection
+ordinal=002 plt=0x00412180 bind=NONE type=FUNC name=kernel32.dll_LeaveCriticalSection
+ordinal=003 plt=0x00412184 bind=NONE type=FUNC name=kernel32.dll_EnterCriticalSection
+ordinal=004 plt=0x00412188 bind=NONE type=FUNC name=kernel32.dll_InitializeCriticalSection
+ordinal=005 plt=0x0041218c bind=NONE type=FUNC name=kernel32.dll_VirtualFree
+ordinal=006 plt=0x00412190 bind=NONE type=FUNC name=kernel32.dll_VirtualAlloc
+ordinal=007 plt=0x00412194 bind=NONE type=FUNC name=kernel32.dll_LocalFree
+ordinal=008 plt=0x00412198 bind=NONE type=FUNC name=kernel32.dll_LocalAlloc
+ordinal=009 plt=0x0041219c bind=NONE type=FUNC name=kernel32.dll_GetVersion
+ordinal=010 plt=0x004121a0 bind=NONE type=FUNC name=kernel32.dll_GetCurrentThreadId
+ordinal=011 plt=0x004121a4 bind=NONE type=FUNC name=kernel32.dll_WideCharToMultiByte
+ordinal=012 plt=0x004121a8 bind=NONE type=FUNC name=kernel32.dll_MultiByteToWideChar
+ordinal=013 plt=0x004121ac bind=NONE type=FUNC name=kernel32.dll_GetThreadLocale
+ordinal=014 plt=0x004121b0 bind=NONE type=FUNC name=kernel32.dll_GetStartupInfoA
+ordinal=015 plt=0x004121b4 bind=NONE type=FUNC name=kernel32.dll_GetModuleFileNameA
+ordinal=016 plt=0x004121b8 bind=NONE type=FUNC name=kernel32.dll_GetLocaleInfoA
+ordinal=017 plt=0x004121bc bind=NONE type=FUNC name=kernel32.dll_GetCommandLineA
+ordinal=018 plt=0x004121c0 bind=NONE type=FUNC name=kernel32.dll_FreeLibrary
+ordinal=019 plt=0x004121c4 bind=NONE type=FUNC name=kernel32.dll_ExitProcess
+ordinal=020 plt=0x004121c8 bind=NONE type=FUNC name=kernel32.dll_WriteFile
+ordinal=021 plt=0x004121cc bind=NONE type=FUNC name=kernel32.dll_UnhandledExceptionFilter
+ordinal=022 plt=0x004121d0 bind=NONE type=FUNC name=kernel32.dll_RtlUnwind
+ordinal=023 plt=0x004121d4 bind=NONE type=FUNC name=kernel32.dll_RaiseException
+ordinal=024 plt=0x004121d8 bind=NONE type=FUNC name=kernel32.dll_GetStdHandle
+ordinal=001 plt=0x004121e0 bind=NONE type=FUNC name=user32.dll_GetKeyboardType
+ordinal=002 plt=0x004121e4 bind=NONE type=FUNC name=user32.dll_MessageBoxA
+ordinal=003 plt=0x004121e8 bind=NONE type=FUNC name=user32.dll_CharNextA
+ordinal=001 plt=0x004121f0 bind=NONE type=FUNC name=advapi32.dll_RegQueryValueExA
+ordinal=002 plt=0x004121f4 bind=NONE type=FUNC name=advapi32.dll_RegOpenKeyExA
+ordinal=003 plt=0x004121f8 bind=NONE type=FUNC name=advapi32.dll_RegCloseKey
+ordinal=001 plt=0x00412200 bind=NONE type=FUNC name=oleaut32.dll_SysFreeString
+ordinal=002 plt=0x00412204 bind=NONE type=FUNC name=oleaut32.dll_SysReAllocStringLen
+ordinal=003 plt=0x00412208 bind=NONE type=FUNC name=oleaut32.dll_SysAllocStringLen
+ordinal=001 plt=0x00412210 bind=NONE type=FUNC name=kernel32.dll_TlsSetValue
+ordinal=002 plt=0x00412214 bind=NONE type=FUNC name=kernel32.dll_TlsGetValue
+ordinal=003 plt=0x00412198 bind=NONE type=FUNC name=kernel32.dll_LocalAlloc
+ordinal=004 plt=0x0041221c bind=NONE type=FUNC name=kernel32.dll_GetModuleHandleA
+ordinal=001 plt=0x00412224 bind=NONE type=FUNC name=advapi32.dll_RegSetValueExA
+ordinal=002 plt=0x004121f0 bind=NONE type=FUNC name=advapi32.dll_RegQueryValueExA
+ordinal=003 plt=0x004121f4 bind=NONE type=FUNC name=advapi32.dll_RegOpenKeyExA
+ordinal=004 plt=0x00412230 bind=NONE type=FUNC name=advapi32.dll_RegEnumValueA
+ordinal=005 plt=0x00412234 bind=NONE type=FUNC name=advapi32.dll_RegDeleteKeyA
+ordinal=006 plt=0x00412238 bind=NONE type=FUNC name=advapi32.dll_RegCreateKeyExA
+ordinal=007 plt=0x0041223c bind=NONE type=FUNC name=advapi32.dll_RegCreateKeyA
+ordinal=008 plt=0x004121f8 bind=NONE type=FUNC name=advapi32.dll_RegCloseKey
+ordinal=009 plt=0x00412244 bind=NONE type=FUNC name=advapi32.dll_OpenProcessToken
+ordinal=010 plt=0x00412248 bind=NONE type=FUNC name=advapi32.dll_LookupAccountNameA
+ordinal=011 plt=0x0041224c bind=NONE type=FUNC name=advapi32.dll_IsValidSid
+ordinal=012 plt=0x00412250 bind=NONE type=FUNC name=advapi32.dll_GetUserNameA
+ordinal=001 plt=0x00412258 bind=NONE type=FUNC name=kernel32.dll_lstrlenA
+ordinal=002 plt=0x0041225c bind=NONE type=FUNC name=kernel32.dll_lstrcmpiA
+ordinal=003 plt=0x00412260 bind=NONE type=FUNC name=kernel32.dll_WriteProcessMemory
+ordinal=004 plt=0x004121c8 bind=NONE type=FUNC name=kernel32.dll_WriteFile
+ordinal=005 plt=0x00412268 bind=NONE type=FUNC name=kernel32.dll_WaitForSingleObject
+ordinal=006 plt=0x0041226c bind=NONE type=FUNC name=kernel32.dll_VirtualProtect
+ordinal=007 plt=0x0041218c bind=NONE type=FUNC name=kernel32.dll_VirtualFree
+ordinal=008 plt=0x00412274 bind=NONE type=FUNC name=kernel32.dll_VirtualAllocEx
+ordinal=009 plt=0x00412190 bind=NONE type=FUNC name=kernel32.dll_VirtualAlloc
+ordinal=010 plt=0x0041227c bind=NONE type=FUNC name=kernel32.dll_Sleep
+ordinal=011 plt=0x00412280 bind=NONE type=FUNC name=kernel32.dll_SizeofResource
+ordinal=012 plt=0x00412284 bind=NONE type=FUNC name=kernel32.dll_SetFilePointer
+ordinal=013 plt=0x00412288 bind=NONE type=FUNC name=kernel32.dll_SetFileAttributesA
+ordinal=014 plt=0x0041228c bind=NONE type=FUNC name=kernel32.dll_ReadProcessMemory
+ordinal=015 plt=0x00412290 bind=NONE type=FUNC name=kernel32.dll_ReadFile
+ordinal=016 plt=0x00412294 bind=NONE type=FUNC name=kernel32.dll_OpenProcess
+ordinal=017 plt=0x00412298 bind=NONE type=FUNC name=kernel32.dll_LockResource
+ordinal=018 plt=0x0041229c bind=NONE type=FUNC name=kernel32.dll_LoadResource
+ordinal=019 plt=0x004122a0 bind=NONE type=FUNC name=kernel32.dll_LoadLibraryA
+ordinal=020 plt=0x004122a4 bind=NONE type=FUNC name=kernel32.dll_GlobalFree
+ordinal=021 plt=0x004122a8 bind=NONE type=FUNC name=kernel32.dll_GetVersionExA
+ordinal=022 plt=0x004122ac bind=NONE type=FUNC name=kernel32.dll_GetTickCount
+ordinal=023 plt=0x004122b0 bind=NONE type=FUNC name=kernel32.dll_GetProcAddress
+ordinal=024 plt=0x004122b4 bind=NONE type=FUNC name=kernel32.dll_GetPrivateProfileStringA
+ordinal=025 plt=0x004122b8 bind=NONE type=FUNC name=kernel32.dll_GetPrivateProfileIntA
+ordinal=026 plt=0x0041221c bind=NONE type=FUNC name=kernel32.dll_GetModuleHandleA
+ordinal=027 plt=0x004122c0 bind=NONE type=FUNC name=kernel32.dll_GetLastError
+ordinal=028 plt=0x004122c4 bind=NONE type=FUNC name=kernel32.dll_GetFileSize
+ordinal=029 plt=0x004122c8 bind=NONE type=FUNC name=kernel32.dll_GetFileAttributesA
+ordinal=030 plt=0x004122cc bind=NONE type=FUNC name=kernel32.dll_GetExitCodeThread
+ordinal=031 plt=0x004122d0 bind=NONE type=FUNC name=kernel32.dll_GetCurrentProcess
+ordinal=032 plt=0x004122d4 bind=NONE type=FUNC name=kernel32.dll_FreeResource
+ordinal=033 plt=0x004121c0 bind=NONE type=FUNC name=kernel32.dll_FreeLibrary
+ordinal=034 plt=0x004122dc bind=NONE type=FUNC name=kernel32.dll_FindResourceA
+ordinal=035 plt=0x004122e0 bind=NONE type=FUNC name=kernel32.dll_FindFirstFileA
+ordinal=036 plt=0x004122e4 bind=NONE type=FUNC name=kernel32.dll_FindClose
+ordinal=037 plt=0x004121c4 bind=NONE type=FUNC name=kernel32.dll_ExitProcess
+ordinal=038 plt=0x004122ec bind=NONE type=FUNC name=kernel32.dll_DeleteFileA
+ordinal=039 plt=0x004122f0 bind=NONE type=FUNC name=kernel32.dll_CreateRemoteThread
+ordinal=040 plt=0x004122f4 bind=NONE type=FUNC name=kernel32.dll_CreateProcessA
+ordinal=041 plt=0x004122f8 bind=NONE type=FUNC name=kernel32.dll_CreateMutexA
+ordinal=042 plt=0x004122fc bind=NONE type=FUNC name=kernel32.dll_CreateFileA
+ordinal=043 plt=0x00412300 bind=NONE type=FUNC name=kernel32.dll_CreateDirectoryA
+ordinal=044 plt=0x00412304 bind=NONE type=FUNC name=kernel32.dll_CopyFileA
+ordinal=045 plt=0x00412308 bind=NONE type=FUNC name=kernel32.dll_CloseHandle
+ordinal=001 plt=0x00412310 bind=NONE type=FUNC name=user32.dll_wvsprintfA
+ordinal=002 plt=0x00412314 bind=NONE type=FUNC name=user32.dll_TranslateMessage
+ordinal=003 plt=0x00412318 bind=NONE type=FUNC name=user32.dll_ToAscii
+ordinal=004 plt=0x0041231c bind=NONE type=FUNC name=user32.dll_SetWindowsHookExA
+ordinal=005 plt=0x00412320 bind=NONE type=FUNC name=user32.dll_PeekMessageA
+ordinal=006 plt=0x00412324 bind=NONE type=FUNC name=user32.dll_GetWindowThreadProcessId
+ordinal=007 plt=0x00412328 bind=NONE type=FUNC name=user32.dll_GetKeyboardState
+ordinal=008 plt=0x0041232c bind=NONE type=FUNC name=user32.dll_FindWindowA
+ordinal=009 plt=0x00412330 bind=NONE type=FUNC name=user32.dll_DispatchMessageA
+ordinal=010 plt=0x00412334 bind=NONE type=FUNC name=user32.dll_CharLowerA
+ordinal=011 plt=0x00412338 bind=NONE type=FUNC name=user32.dll_CharUpperA
+ordinal=001 plt=0x00412340 bind=NONE type=FUNC name=ole32.dll_OleInitialize
+ordinal=002 plt=0x00412344 bind=NONE type=FUNC name=ole32.dll_CoCreateInstance
+ordinal=001 plt=0x0041234c bind=NONE type=FUNC name=ole32.dll_CoTaskMemFree
+ordinal=001 plt=0x00412354 bind=NONE type=FUNC name=pstorec.dll_PStoreCreateInstance
+ordinal=001 plt=0x0041235c bind=NONE type=FUNC name=ole32.dll_StringFromCLSID
+ordinal=001 plt=0x00412364 bind=NONE type=FUNC name=rasapi32.dll_RasGetEntryDialParamsA
+ordinal=002 plt=0x00412368 bind=NONE type=FUNC name=rasapi32.dll_RasEnumEntriesA
+ordinal=001 plt=0x00412370 bind=NONE type=FUNC name=shell32.dll_SHGetSpecialFolderPathA
+ordinal=001 plt=0x00412378 bind=NONE type=FUNC name=advapi32.dll_LsaFreeMemory
+ordinal=002 plt=0x0041237c bind=NONE type=FUNC name=advapi32.dll_LsaClose
+ordinal=003 plt=0x00412380 bind=NONE type=FUNC name=advapi32.dll_LsaRetrievePrivateData
+ordinal=004 plt=0x00412384 bind=NONE type=FUNC name=advapi32.dll_LsaOpenPolicy
+ordinal=005 plt=0x00412388 bind=NONE type=FUNC name=advapi32.dll_ConvertSidToStringSidA
+ordinal=001 plt=0x00412390 bind=NONE type=FUNC name=crypt32.dll_CryptUnprotectData
+ordinal=001 plt=0x00412398 bind=NONE type=FUNC name=advapi32.dll_CredEnumerateA
+ordinal=001 plt=0x004123a0 bind=NONE type=FUNC name=advapi32.dll_CryptDestroyHash
+ordinal=002 plt=0x004123a4 bind=NONE type=FUNC name=advapi32.dll_CryptHashData
+ordinal=003 plt=0x004123a8 bind=NONE type=FUNC name=advapi32.dll_CryptCreateHash
+ordinal=004 plt=0x004123ac bind=NONE type=FUNC name=advapi32.dll_CryptGetHashParam
+ordinal=005 plt=0x004123b0 bind=NONE type=FUNC name=advapi32.dll_CryptReleaseContext
+ordinal=006 plt=0x004123b4 bind=NONE type=FUNC name=advapi32.dll_CryptAcquireContextA
 
 126 imports
 '
@@ -440,6 +438,6 @@ CMDS='il
 EXPECT='[Linked libraries]
 comctl32.dll
 
-1 libraries
+1 library
 '
 run_test

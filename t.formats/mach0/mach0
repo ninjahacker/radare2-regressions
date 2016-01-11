@@ -61,6 +61,7 @@ ARGS=
 IGNORE_ERR=1
 CMDS='ik~uuid
 '
-EXPECT='uuid.0=ff4d6c2e1dc0369d98d0d3040a8049e8
+EXPECT='mach0_cmd_8.cmd=uuid
+uuid.0=ff4d6c2e1dc0369d98d0d3040a8049e8
 '
 run_test

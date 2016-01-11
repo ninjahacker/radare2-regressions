@@ -6,10 +6,11 @@ for a in . .. ../.. ; do [ -e $a/tests.sh ] && . $a/tests.sh ; done
 
 NAME='obj entry'
 FILE=../../bins/elf/test.o
+BROKEN=1
 ARGS=
 CMDS='ie~addr
 '
-EXPECT='vaddr=0x00000040 paddr=0x00000040 baddr=0x00000000 laddr=0x00000000
+EXPECT='vaddr=0x00000000 paddr=0x00000040 baddr=0x00000000 laddr=0x00000000
 '
 run_test
 
@@ -19,36 +20,39 @@ BROKEN=1
 ARGS="-B 0x200000"
 CMDS='ie~addr
 '
-EXPECT='vaddr=0x00200074 paddr=0x00000074 baddr=0x00200000 laddr=0x00000000
+EXPECT='vaddr=0x00200000 paddr=0x00000040 baddr=0x00200000 laddr=0x00000000
 '
 run_test
 
 NAME='obj main address'
+BROKEN=1
 FILE=../../bins/elf/test.o
 ARGS=
 CMDS='?v sym.main
 '
-EXPECT='0x50
+EXPECT='0x10
 '
 run_test
 
 NAME='obj main address'
+BROKEN=1
 FILE=../../bins/elf/test.o
 ARGS="-B 0x200000"
 CMDS='?v sym.main
 '
-EXPECT='0x200050
+EXPECT='0x200010
 '
 run_test
 
 NAME='obj main'
 FILE=../../bins/elf/test.o
+BROKEN=1
 ARGS=
-CMDS='pi 3@sym.main
+CMDS='pi 3@ sym.main
 '
 EXPECT='push rbp
 mov rbp, rsp
-call 0x59
+call 0x19
 '
 run_test
 
@@ -60,7 +64,7 @@ CMDS='pi 3@sym.main
 '
 EXPECT='push rbp
 mov rbp, rsp
-call 0x59
+call 0x200019
 '
 run_test
 

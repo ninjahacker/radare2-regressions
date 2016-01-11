@@ -7,3 +7,14 @@ ARGS='-A'
 CMDS="q!"
 IGNORE_ERR=1
 run_test
+
+NAME='PE: corkami 65535sects.exe - sections list'
+FILE=../../bins/pe/96emptysections.exe
+BROKEN=1
+ARGS='-n'
+CMDS="!rabin2 -pS ${FILE}"
+FILTER='grep sections'
+EXPECT='65535 sections
+'
+IGNORE_ERR=1
+run_test

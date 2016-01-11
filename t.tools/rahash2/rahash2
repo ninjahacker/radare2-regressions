@@ -1,26 +1,42 @@
 #!/bin/sh
 for a in . .. ../.. ; do [ -e $a/tests.sh ] && . $a/tests.sh ; done
 
-NAME='rahash2 -a all'
-CMDS='!rahash2 -a all ../../bins/elf/hello-linux-x86_64'
+NAME='rahash2 -a md5'
+CMDS='!rahash2 -a md5 ../../bins/elf/hello-linux-x86_64'
 BROKEN=
 EXPECT='../../bins/elf/hello-linux-x86_64: 0x00000000-0x00001a35 md5: c957bd5bd6204470256bc15248ccafd4
-../../bins/elf/hello-linux-x86_64: 0x00000000-0x00001a35 sha1: 687c82d13cb27f0600d8e57edc784282c1732f56
-../../bins/elf/hello-linux-x86_64: 0x00000000-0x00001a35 sha256: 7bdbf25324af1946ec0b16dbf928875a588a786f7c279cd115729c5a3a297a55
-../../bins/elf/hello-linux-x86_64: 0x00000000-0x00001a35 sha384: bf7078cb653051652d1c2d624d9b139c1341411b8c9715f609c699454c66be672957483232073d1a94902e5edb6acce1
-../../bins/elf/hello-linux-x86_64: 0x00000000-0x00001a35 sha512: 2b19ee5a3df9e19b51ac842ca12c133793d4fef406b00a566444285281c393d7722eacbebc43434de20a75fdf2bff8373dbc31279d69fa1f4fa5eebb1dccec5a
-../../bins/elf/hello-linux-x86_64: 0x00000000-0x00001a35 crc16: 6cee
-../../bins/elf/hello-linux-x86_64: 0x00000000-0x00001a35 crc32: b382af65
-../../bins/elf/hello-linux-x86_64: 0x00000000-0x00001a35 md4: d4d61472a12d59be3a85e07ff9065658
-../../bins/elf/hello-linux-x86_64: 0x00000000-0x00001a35 xor: d1
-../../bins/elf/hello-linux-x86_64: 0x00000000-0x00001a35 xorpair: b7
-../../bins/elf/hello-linux-x86_64: 0x00000000-0x00001a35 parity: 00
-../../bins/elf/hello-linux-x86_64: 0x00000000-0x00001a35 entropy: 03661472
-../../bins/elf/hello-linux-x86_64: 0x00000000-0x00001a35 hamdist: 01
-../../bins/elf/hello-linux-x86_64: 0x00000000-0x00001a35 pcprint: 13
-../../bins/elf/hello-linux-x86_64: 0x00000000-0x00001a35 mod255: 4e
-../../bins/elf/hello-linux-x86_64: 0x00000000-0x00001a35 xxhash: c16e756e
-../../bins/elf/hello-linux-x86_64: 0x00000000-0x00001a35 adler32: 453441ad
+'
+
+run_test
+
+NAME='rahash2 -a sha1'
+CMDS='!rahash2 -a sha1 ../../bins/elf/hello-linux-x86_64'
+BROKEN=
+EXPECT='../../bins/elf/hello-linux-x86_64: 0x00000000-0x00001a35 sha1: 687c82d13cb27f0600d8e57edc784282c1732f56
+'
+
+run_test
+
+NAME='rahash2 -a sha256'
+CMDS='!rahash2 -a sha256 ../../bins/elf/hello-linux-x86_64'
+BROKEN=
+EXPECT='../../bins/elf/hello-linux-x86_64: 0x00000000-0x00001a35 sha256: 7bdbf25324af1946ec0b16dbf928875a588a786f7c279cd115729c5a3a297a55
+'
+
+run_test
+
+NAME='rahash2 -a sha384'
+CMDS='!rahash2 -a sha384 ../../bins/elf/hello-linux-x86_64'
+BROKEN=1
+EXPECT='../../bins/elf/hello-linux-x86_64: 0x00000000-0x00001a35 sha384: a6fed224b0b5892ab44839b5ae6a12e54fb3393b5f1e1ca174fb5a0032c994f1c492c5b3a090518d8a60875223977ba4
+'
+
+run_test
+
+NAME='rahash2 -a sha512'
+CMDS='!rahash2 -a sha512 ../../bins/elf/hello-linux-x86_64'
+BROKEN=1
+EXPECT='../../bins/elf/hello-linux-x86_64: 0x00000000-0x00001a35 sha512: 2640b1ff96870fb78a3d8ae6b51595ca86c37e25443b2e8c5441e77d11cdb3830ece8d791561c22788d37d7f22c99cdabf8f798826c0ff441901e6157890fee6
 '
 
 run_test
@@ -37,7 +53,7 @@ run_test
 
 NAME='rahash2 -b10 -a md5,sha1,sha256 -r'
 CMDS='!rahash2 -b10 -a md5,sha1,sha256 -r ../../bins/elf/hello-linux-x86_64'
-BROKEN=1
+BROKEN=
 EXPECT='../../bins/elf/hello-linux-x86_64: e file.md5=c957bd5bd6204470256bc15248ccafd4
 ../../bins/elf/hello-linux-x86_64: e file.sha1=687c82d13cb27f0600d8e57edc784282c1732f56
 ../../bins/elf/hello-linux-x86_64: e file.sha256=7bdbf25324af1946ec0b16dbf928875a588a786f7c279cd115729c5a3a297a55
@@ -246,28 +262,27 @@ EXPECT='21232f297a57a5a743894a0e4a801fc3
 
 run_test
 
-NAME='echo -n "admin" | rahash2 -q -a md5 -s -'
-CMDS='!echo -n "admin" | rahash2 -q -a md5 -s -'
+NAME='printf "admin" | rahash2 -q -a md5 -s -'
+CMDS='!printf "admin" | rahash2 -q -a md5 -s -'
 BROKEN=1
 EXPECT='21232f297a57a5a743894a0e4a801fc3
 '
 
 
-NAME='echo -n "aadmina" | rahash2 -f0x1 -t0x5 -q -a md5 -s -'
-CMDS='!echo -n "aadmina" | rahash2 -f0x1 -t0x5 -q -a md5 -s -'
+NAME='printf "aadmina" | rahash2 -f0x1 -t0x5 -q -a md5 -s -'
+CMDS='!printf "aadmina" | rahash2 -f0x1 -t0x5 -q -a md5 -s -'
 BROKEN=
 EXPECT='21232f297a57a5a743894a0e4a801fc3
 '
 
 run_test
 
-NAME='echo -n "aa61646d696eaa" | rahash2 -f0x1 -t0x5 -q -a md5 -x -'
-CMDS='!echo -n "aa61646d696eaa" | rahash2 -f0x1 -t0x5 -q -a md5 -x -'
+NAME='printf "aa61646d696eaa" | rahash2 -f0x1 -t0x5 -q -a md5 -x -'
+CMDS='!printf "aa61646d696eaa" | rahash2 -f0x1 -t0x5 -q -a md5 -x -'
 BROKEN=
 EXPECT='21232f297a57a5a743894a0e4a801fc3
 '
 run_test
-
 
 NAME='rahash2 -f0x1 -t0x5 -q -a md5 admin.txt'
 CMDS='!rahash2 -f0x1 -t0x5 -q -a md5 ../../bins/other/admin.txt'
@@ -275,7 +290,6 @@ FILE=../../bins/other/admin.txt
 BROKEN=
 EXPECT='21232f297a57a5a743894a0e4a801fc3
 '
-
 run_test
 
 
@@ -283,7 +297,28 @@ NAME='rahash2 -v~commit?"'
 CMDS='!!rahash2 -v~commit?'
 EXPECT='1
 '
-
 run_test
 
+NAME='rahash2 -s hello1'
+CMDS='!!rahash2 -qa md5 -s hello1'
+EXPECT='203ad5ffa1d7c650ad681fdff3965cd2
+'
+run_test
 
+NAME='rahash2 -s hello\x31'
+CMDS='!!rahash2 -qa md5 -s hello\\x31'
+EXPECT='203ad5ffa1d7c650ad681fdff3965cd2
+'
+run_test
+
+NAME='rahash2 zero length hashes md5'
+CMDS='!rahash2 -a sha1 -s ""'
+EXPECT='0x00000000-0x00000000 sha1: da39a3ee5e6b4b0d3255bfef95601890afd80709
+'
+run_test
+
+NAME='rahash2 zero length hashes sha1'
+CMDS='!rahash2 -a sha1 -s ""'
+EXPECT='0x00000000-0x00000000 sha1: da39a3ee5e6b4b0d3255bfef95601890afd80709
+'
+run_test

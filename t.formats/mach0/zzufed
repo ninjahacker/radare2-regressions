@@ -84,3 +84,10 @@ ARGS='-A'
 CMDS="q!"
 EXPECT=''
 run_test
+
+NAME='MACH0: rskfuzz - open'
+FILE=../../bins/mach0/rskfuzz
+ARGS='-A'
+CMDS="q!"
+EXPECT=''
+run_test

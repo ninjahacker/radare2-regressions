@@ -17,6 +17,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+export RABIN2_NOPLUGINS=1
+export RASM2_NOPLUGINS=1
+export R2_NOPLUGINS=1
+
 GREP="$1"
 GREP=""
 SKIP=0
@@ -34,6 +38,8 @@ die() {
 printdiff() {
     if [ -n "${VERBOSE}" ]; then
         echo
+        print_label Regression:
+	echo "$0"
         print_label Command:
         echo "${R2CMD}"
         print_label File:
@@ -134,7 +140,11 @@ run_test() {
     else
         # R2_ARGS must be defined by the user in cmdline f.ex -e io.vio=true
         # No colors and no user configs.
-        R2ARGS="${R2} -e scr.color=0 -N -q -i ${TMP_RAD} ${R2_ARGS} ${ARGS} ${FILE} > ${TMP_OUT} 2> ${TMP_ERR}"
+        if [ -n "${DEBUG}" ]; then
+            R2ARGS="gdb --args ${R2} -e scr.color=0 -N -q -i ${TMP_RAD} ${R2_ARGS} ${ARGS} ${FILE}"
+        else
+            R2ARGS="${R2} -e scr.color=0 -N -q -i ${TMP_RAD} ${R2_ARGS} ${ARGS} ${FILE} > ${TMP_OUT} 2> ${TMP_ERR}"
+        fi
         R2CMD=
         # Valgrind to detect memory corruption.
         if [ -n "${VALGRIND}" ]; then
@@ -224,11 +234,9 @@ run_test() {
             cat "${TMP_VAL}"
             echo
         fi
-
     elif [ -n "${EXITCODE}" ]; then
         test_failed "wrong exit code: ${EXITCODE}"
         printdiff
-
     elif [ ${CODE} -ne 0 ]; then
         test_failed "radare2 crashed"
         printdiff
@@ -255,7 +263,8 @@ run_test() {
     else
         test_success
     fi
-    rm -f "${TMP_RAD}" "${TMP_OUT}" "${TMP_ERR}" "${TMP_VAL}" \
+    rm -f "${TMP_RAD}" "${TMP_OUT}" \
+	  "${TMP_ERR}" "${TMP_VAL}" \
           "${TMP_EXP}" "${TMP_EXR}"
 
     # Reset most variables in case the next test script doesn't set them.
@@ -284,6 +293,7 @@ test_reset() {
     REVERSERC=
     ESSENTIAL=
     SKIP=
+    DEBUG=
 }
 
 test_reset
@@ -334,35 +344,45 @@ test_failed() {
     fi
 }
 
-print_success() {
-if [ -n "${NOCOLOR}" ]; then
-    printf "%b" "\r[${*}]\n"
+if [ -n "${TRAVIS}" ]; then
+    NL="\n"
 else
-    printf "%b" "\r\033[32m[${*}]\033[0m\n"
+    NL="\r"
 fi
+
+print_success() {
+    if [ -n "${NOOK}" ]; then
+        printf "\033[2K\r"
+    else
+        if [ -n "${NOCOLOR}" ]; then
+            printf "%b" "${NL}[${*}]\n"
+        else
+            printf "%b" "${NL}\033[32m[${*}]\033[0m\n"
+        fi
+    fi
 }
 
 print_broken() {
 if [ -n "${NOCOLOR}" ]; then
-    printf "%b" "\r[${*}]\n"
+    printf "%b" "${NL}[${*}]\n"
 else
-    printf "%b" "\r\033[34m[${*}]\033[0m\n"
+    printf "%b" "${NL}\033[34m[${*}]\033[0m\n"
 fi
 }
 
 print_failed() {
 if [ -n "${NOCOLOR}" ]; then
-    printf "%b" "\r[${*}]\n"
+    printf "%b" "${NL}[${*}]\n"
 else
-    printf "%b" "\r\033[31m[${*}]\033[0m\n"
+    printf "%b" "${NL}\033[31m[${*}]\033[0m\n"
 fi
 }
 
 print_fixed() {
 if [ -n "${NOCOLOR}" ]; then
-    printf "%b" "\r[${*}]\n"
+    printf "%b" "${NL}[${*}]\n"
 else
-    printf "%b" "\r\033[33m[${*}]\033[0m\n"
+    printf "%b" "${NL}\033[33m[${*}]\033[0m\n"
 fi
 }
 
@@ -384,6 +404,10 @@ fi
 }
 
 print_report() {
+    if [ ! -z "${NOREPORT}" ]; then
+        return
+    fi
+
     echo
     echo "=== Report ==="
     echo
@@ -417,18 +441,29 @@ print_report() {
     else
         print_failed  0
     fi
-    printf "      TOTAL\r"
+    printf "      TOTAL${NL}"
     print_label "[${TESTS_TOTAL}]"
 
     dc -V > /dev/null 2>&1
     if [ $? = 0 ]; then
       BADBOYS=$((${TESTS_BROKEN}+${TESTS_FAILED}+${TESTS_FATAL}))
       BN=`echo "100 ${BADBOYS} * ${TESTS_TOTAL} / n" | dc`
-      printf "      BROKENNESS\r"
+      printf "      BROKENNESS${NL}"
       print_label "[${BN}%]"
       echo
     else
-      printf " TOTAL\r"
+      printf " TOTAL${NL}"
       echo
     fi
 }
+
+save_stats(){
+    cd $R
+    V=`radare2 -v 2>/dev/null| grep ^rada| awk '{print $5}'`
+    touch stats.csv
+    grep -v "^$V" stats.csv > .stats.csv
+    echo "$V,${TESTS_SUCCESS},${TESTS_FIXED},${TESTS_BROKEN},${TESTS_FAILED},${TESTS_FATAL},${FAILED}" >> .stats.csv
+    sort .stats.csv > stats.csv
+    rm -f .stats.csv
+}
+

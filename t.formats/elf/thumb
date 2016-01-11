@@ -54,6 +54,7 @@ run_test
 NAME='thumb anal expand'
 FILE=../../bins/elf/thumb
 ARGS=
+BROKEN=1
 IGNORE_ERR=1
 CMDS='pi 2@sym.main
 af@sym.main

@@ -1,0 +1,215 @@
+#!/bin/sh
+# GPL 3+ - Copyright (C) 2015  pancake
+
+for a in . .. ../.. ; do [ -e $a/tests.sh ] && . $a/tests.sh ; done
+
+NAME='anal vars crash'
+FILE=-
+ARGS=
+CMDS='af
+afv-*
+afv-*
+'
+EXPECT=""
+run_test
+
+NAME='anal vars crash 2'
+FILE=-
+ARGS=
+CMDS='wx 554889e5534881ec3810000048830c24004881c42010000064488b042528000000488945e831c04885ff4889fb909090909090c3 @ 10
+af @ 10
+afvn old_1 new_1
+'
+EXPECT=""
+run_test
+
+
+NAME='afa & afan'
+FILE=../../bins/efi/bootia32.efi
+ARGS=
+CMDS='af
+afan arg_2 ImageHandle
+afan arg_3 SystemTable
+afa~?ImageHandle
+afa~?SystemTable
+'
+EXPECT="1
+1
+"
+run_test
+
+NAME='afa* & afan'
+FILE=../../bins/efi/bootia32.efi
+ARGS=
+CMDS='af
+afan arg_2 ImageHandle
+afan arg_3 SystemTable
+afa*~?ImageHandle
+afa*~?SystemTable
+'
+EXPECT="1
+1
+"
+run_test
+
+NAME='afa idx... & afan'
+FILE=../../bins/efi/bootia32.efi
+ARGS=
+CMDS='af
+afa 8 ImageHandle blah @ 0x10002d8d
+afa*~ImageHandle
+'
+EXPECT="afa 8 ImageHandle blah @ 0x10002d8d
+"
+run_test
+
+NAME='afaj'
+FILE=../../bins/efi/bootia32.efi
+ARGS=
+CMDS='af
+afa 8 ImageHandle blah @ 0x10002d8d
+afaj~?ImageHandle
+'
+EXPECT="1
+"
+run_test
+
+NAME='afa-ArgName'
+FILE=../../bins/efi/bootia32.efi
+BROKEN=
+ARGS=
+CMDS='af
+afa 8 ImageHandle blah @ 0x10002d8d
+afa-ImageHandle
+afa~?ImageHandle
+'
+EXPECT="0
+"
+run_test
+
+NAME='afa-IDX'
+FILE=../../bins/efi/bootia32.efi
+BROKEN=
+ARGS=
+CMDS='af
+afa 8 ImageHandle blah @ 0x10002d8d
+afa-0x8
+afa~?ImageHandle
+'
+EXPECT="0
+"
+run_test
+
+NAME='afv & afvn'
+FILE=../../bins/efi/bootia32.efi
+BROKEN=
+ARGS=
+CMDS='af
+afvn local_0 blah
+afv~?blah
+'
+EXPECT="1
+"
+run_test
+
+NAME='afv & afvn'
+FILE=../../bins/efi/bootia32.efi
+BROKEN=
+ARGS=
+CMDS='af
+afvn local_0 blah
+afvj~?blah
+'
+EXPECT="1
+"
+run_test
+
+NAME='afv idx & afv*'
+FILE=../../bins/efi/bootia32.efi
+BROKEN=
+ARGS=
+CMDS='af
+afv 0 blah typeR @ 0x10002d8d
+afv*~?blah
+afv*~?typeR
+'
+EXPECT="1
+1
+"
+run_test
+
+NAME='afv-name'
+FILE=../../bins/efi/bootia32.efi
+BROKEN=
+ARGS=
+CMDS='af
+afv 0 blah typeR @ 0x10002d8d
+afv-blah
+afv~?blah
+'
+EXPECT="0
+"
+run_test
+
+NAME='afv-idx'
+FILE=../../bins/efi/bootia32.efi
+BROKEN=
+ARGS=
+CMDS='af
+afv 0 blah typeR @ 0x10002d8d
+afv-0
+afv~?blah
+'
+EXPECT="0
+"
+run_test
+
+NAME='afa-* afv-*'
+FILE=../../bins/efi/bootia32.efi
+ARGS=
+BROKEN=
+CMDS='af
+afa-*
+afv-*
+afa~?
+afv~?
+'
+EXPECT="0
+0
+"
+run_test
+
+#TODO AFAG AFAS AFVG AFVS
+
+NAME='anal vars count'
+FILE=../../bins/mach0/ls-osx-x86_64
+ARGS=
+CMDS='af
+afv~?
+'
+EXPECT="12
+"
+run_test
+
+NAME='anal vars retype'
+FILE=../../bins/mach0/ls-osx-x86_64
+ARGS=
+CMDS='af
+afvt local_6 char
+afv~l_6
+'
+EXPECT="var char local_6 @ rbp-0x30
+var int local_6_4 @ rbp-0x34
+"
+run_test
+
+NAME='anal vars rename'
+FILE=../../bins/mach0/ls-osx-x86_64
+ARGS=
+CMDS='af
+afvn local_6 newname
+afv~newname
+'
+EXPECT="var int newname @ rbp-0x30
+"
+run_test

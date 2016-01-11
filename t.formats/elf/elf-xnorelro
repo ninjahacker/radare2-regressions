@@ -4,9 +4,9 @@ for a in . .. ../.. ; do [ -e $a/tests.sh ] && . $a/tests.sh ; done
 NAME='PE: corkami elf-xnorelro - relro disabled'
 FILE=../../bins/elf/elf-xnorelro
 ARGS=''
-CMDS="ik~elf.relro=false"
+CMDS="ik~relro"
 
-EXPECT='elf.relro=false
+EXPECT='elf.relro=no relro
 '
 run_test
 

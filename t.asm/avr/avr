@@ -1,74 +1,63 @@
 #!/bin/sh
 for a in . .. ../.. ; do [ -e $a/tests.sh ] && . $a/tests.sh ; done
 
+test_vector() {
+#disasm
+NAME="${1} DISasm: [${3} => ${2} ]"
+FILE=malloc://32
+if [ "${5}" = "br" ]; then
+		BROKEN=1
+	fi
+CMDS='
+e asm.arch='${1}'
+wx '${3}'
+pi 1
+'
+EXPECT="${2}
+"
+run_test
+
+#asm
+NAME="${1} Asm: [${2} => ${3}]"
+FILE=malloc://32
+if [ "${5}" = "br" ]; then
+		BROKEN=1
+	fi
+CMDS='
+e asm.arch='${1}'
+wa '${2}' @ 0
+p8 '${4}'
+'
+EXPECT="${3}
+"
+run_test
+}
+
+PLUGIN=avr
+
+# Relative instructions require additional handling
+
 # -------------------------------
-# ADD instruction
-NAME="AVR: [ADD]"
+# BRBC instructions group
+NAME="${PLUGIN} Asm: [brbc commands]"
 FILE=malloc://32
 CMDS='
 e asm.arch=avr
-wx 480f
-pi 1
+wa brcc 0x4 @ 0
+wa brne 0x6 @ 2
+wa brpl 0x8 @ 4
+wa brvc 0xa @ 6
+wa brge 0xc @ 8
+wa brhc 0xe @ 0xa
+wa brtc 0x10 @ 0xc
+wa brid 0x12 @ 0xe 
+p8 16
 '
-EXPECT='add r20, r24
-'
-run_test
-
-# -------------------------------
-# ADC instruction
-NAME="AVR: [ADC]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx 591f
-pi 1
-'
-EXPECT='adc r21, r25
+EXPECT='08f409f40af40bf40cf40df40ef40ff4
 '
 run_test
 
-# -------------------------------
-# ADIW instruction
-NAME="AVR: [ADIW]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx 0196
-pi 1
-'
-EXPECT='adiw r24, 0x01
-'
-run_test
-
-# -------------------------------
-# ANDI instruction
-NAME="AVR: [ANDI]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx 8f7e
-pi 1
-'
-EXPECT='andi r24, 0xef
-'
-run_test
-
-# -------------------------------
-# BLD instruction
-NAME="AVR: [BLD]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx e1f8
-pi 1
-'
-EXPECT='bld r14, 1
-'
-run_test
-
-# -------------------------------
-# BRBC instruction
-NAME="AVR: [BRBC]"
+NAME="${PLUGIN} DISasm: [brbc commands]"
 FILE=malloc://32
 CMDS='
 e asm.arch=avr
@@ -94,8 +83,26 @@ brid 0x12
 run_test
 
 # -------------------------------
-# BRBS instruction
-NAME="AVR: [BRBS]"
+# BRBS instructions group
+NAME="${PLUGIN} Asm: [brbs commads]"
+FILE=malloc://32
+CMDS='
+e asm.arch=avr
+wa brcs 0x4 @ 0
+wa breq 0x6 @ 2
+wa brmi 0x8 @ 4
+wa brvs 0xa @ 6
+wa brlt 0xc @ 8
+wa brhs 0xe @ 0xa
+wa brts 0x10 @ 0xc
+wa brie 0x12 @ 0xe
+p8 16
+'
+EXPECT='08f009f00af00bf00cf00df00ef00ff0
+'
+run_test
+
+NAME="${PLUGIN} DISasm: [brbs commads]"
 FILE=malloc://32
 CMDS='
 e asm.arch=avr
@@ -121,577 +128,98 @@ brie 0x12
 run_test
 
 # -------------------------------
-# CLI instruction
-NAME="AVR: [CLI]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx f894
-pi 1
-'
-EXPECT='cli 
-'
-run_test
+# Rest instructions
+test_vector "${PLUGIN}" "add r20, r24" 480f 2
+test_vector "${PLUGIN}" "adc r21, r25" 591f 2
+test_vector "${PLUGIN}" "adiw r24, 0x01" 0196 2
+test_vector "${PLUGIN}" "andi r24, 0xef" 8f7e 2
+test_vector "${PLUGIN}" "bld r14, 1" e1f8 2
+test_vector "${PLUGIN}" "brcc 0x4" 08f4 2
+test_vector "${PLUGIN}" "cli " f894 2
+test_vector "${PLUGIN}" "clr r15" ff24 2
+test_vector "${PLUGIN}" "call 0x2016" 0e940b10 4
 
-# -------------------------------
-# CLR instruction
-NAME="AVR: [CLR]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx ff24
-pi 1
-'
-EXPECT='clr r15
-'
-run_test
-
-# -------------------------------
-# CALL instruction
-NAME="AVR: [CALL]"
+# additional analyzer tests for call
+NAME="${PLUGIN} DISasm: [0e940b00 => call 0x16] (2)"
 FILE=malloc://4096
 CMDS='
 e asm.arch=avr
-wx 0e940b10 @ 0x2d1
-s 0x2d1
-pi 1
-'
-EXPECT='call 0x2016
-'
-run_test
-
-NAME="AVR: [CALL] (2)"
-FILE=malloc://4096
-CMDS='
-e asm.arch=avr
-wx 0e940b00 @ 0x2d1
-s 0x2d1
+wx 0e940b00 @ 0x2d0
+s 0x2d0
 pi 1
 '
 EXPECT='call 0x16
 '
 run_test
 
-NAME="AVR: [CALL] (ANAL)"
+NAME="${PLUGIN} DISasm: [0e940b10 => 0x00002016] (ANAL)"
 FILE=malloc://4096
 CMDS='
 e asm.arch=avr
-wx 0e940b10 @ 0x2d1
-s 0x2d1
+wx 0e940b10 @ 0x2d0
+s 0x2d0
 ao 1~jump[1]
 '
 EXPECT='0x00002016
 '
 run_test
 
-NAME="AVR: [CALL] - jump check"
+NAME="${PLUGIN} DISasm: [0e940b10 => call] - jump check"
 FILE=malloc://4096
 CMDS='
 e asm.arch=avr
-s 0x2d1
+s 0x2d0
 wx 0e940b10
 ao 1~jump
 '
 EXPECT='jump: 0x00002016
 '
 run_test
+# /additional analyzer tests for call
 
-# -------------------------------
-# COM instruction
-NAME="AVR: [COM]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx 8095
-pi 1
-'
-EXPECT='com r24
-'
-run_test
+test_vector "${PLUGIN}" "com r24" 8095 2
+test_vector "${PLUGIN}" "cp r18, r24" 2817 2
+test_vector "${PLUGIN}" "cpi r24, 0xf5" 853f 2
+test_vector "${PLUGIN}" "cpc r25, r18" 9207 2
+test_vector "${PLUGIN}" "dec r0" 0a94 2
+test_vector "${PLUGIN}" "eor r24, r25" 8927 2
+test_vector "${PLUGIN}" "elpm r0, Z+" 0790 2
+test_vector "${PLUGIN}" "in r28, 0x3d" cdb7 2
+test_vector "${PLUGIN}" "inc r14" e394 2
+test_vector "${PLUGIN}" "jmp 0x246" 0c942301 4
+test_vector "${PLUGIN}" "jmp 0x20246" 0d942301 4
+test_vector "${PLUGIN}" "jmp 0x2c0246" bc942301 4
+test_vector "${PLUGIN}" "jmp 0x400246" 0c952301 4
+test_vector "${PLUGIN}" "ld r24, Z" 8081 2
+test_vector "${PLUGIN}" "ldi r25, 0x07" 97e0 2
+test_vector "${PLUGIN}" "ldd r9, Z+1" 9180 2
+test_vector "${PLUGIN}" "lds r24, 0x102" 80910201 4
+test_vector "${PLUGIN}" "lsl r24" 880f 2
+test_vector "${PLUGIN}" "mov r0, r31" 0f2e 2
+test_vector "${PLUGIN}" "movw r22, r18" b901 2
+test_vector "${PLUGIN}" "ori r24, 0x01" 8160 2
+test_vector "${PLUGIN}" "out 0x3e, r25" 9ebf 2
+test_vector "${PLUGIN}" "push r29" df93 2
+test_vector "${PLUGIN}" "rcall 0x4" 01d0 2
+test_vector "${PLUGIN}" "rjmp 0x4" 01c0 2
+test_vector "${PLUGIN}" "pop r28" cf91 2
+test_vector "${PLUGIN}" "ret " 0895 2
+test_vector "${PLUGIN}" "reti " 1895 2
+test_vector "${PLUGIN}" "rol r25" 991f 2
+test_vector "${PLUGIN}" "sbc r19, r25" 390b 2
+test_vector "${PLUGIN}" "sbci r19, 0xff" 3f4f 2
+test_vector "${PLUGIN}" "sbiw r24, 0x01" 0197 2
+test_vector "${PLUGIN}" "sei " 7894 2
+test_vector "${PLUGIN}" "ser r24" 8fef 2
+test_vector "${PLUGIN}" "std Z+0, r1" 1082 2
+test_vector "${PLUGIN}" "std Z+1, r1" 1182 2
+test_vector "${PLUGIN}" "sts 0x7c0, r25" 9093c007 4
 
-# -------------------------------
-# CP instruction
-NAME="AVR: [CP]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx 2817
-pi 1
-'
-EXPECT='cp r18, r24
-'
-run_test
-
-# -------------------------------
-# CPI instruction
-NAME="AVR: [CPI]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx 853f
-pi 1
-'
-EXPECT='cpi r24, 0xf5
-'
-run_test
-
-# -------------------------------
-# CPC instruction
-NAME="AVR: [CPC]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx 9207
-pi 1
-'
-EXPECT='cpc r25, r18
-'
-run_test
-
-# -------------------------------
-# DEC instruction
-NAME="AVR: [DEC]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx 0a94
-pi 1
-'
-EXPECT='dec r0
-'
-run_test
-
-# -------------------------------
-# EOR instruction
-NAME="AVR: [EOR]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx 8927
-pi 1
-'
-EXPECT='eor r24, r25
-'
-run_test
-
-# -------------------------------
-# ELPM instruction
-NAME="AVR: [ELPM]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx 0790
-pi 1
-'
-EXPECT='elpm r0, Z+
-'
-run_test
-
-# -------------------------------
-# IN instruction
-NAME="AVR: [IN]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx cdb7
-pi 1
-'
-# TODO: should be in r28, spl
-EXPECT='in r28, 0x3d
-'
-run_test
-
-# -------------------------------
-# INC instruction
-NAME="AVR: [INC]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx e394
-pi 1
-'
-EXPECT='inc r14
-'
-run_test
-
-# -------------------------------
-# JMP instruction
-NAME="AVR: [JMP]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx 0c942301
-pi 1
-'
-EXPECT='jmp 0x246
-'
-run_test
-
-NAME="AVR: [JMP] (long address(1))"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx 0d942301
-pi 1
-'
-EXPECT='jmp 0x20246
-'
-run_test
-
-NAME="AVR: [JMP] (long address(2))"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx bc942301
-pi 1
-'
-EXPECT='jmp 0x2c0246
-'
-run_test
-
-NAME="AVR: [JMP] (long address(3))"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx 0c952301
-pi 1
-'
-EXPECT='jmp 0x400246
-'
-run_test
-
-# -------------------------------
-# LD instruction
-NAME="AVR: [LD]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx 8081
-pi 1
-'
-EXPECT='ld r24, Z
-'
-run_test
-
-# -------------------------------
-# LDI instruction
-NAME="AVR: [LDI]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx 97e0
-pi 1
-'
-EXPECT='ldi r25, 0x07
-'
-run_test
-
-# -------------------------------
-# LDD instruction
-NAME="AVR: [LDD]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx 9180
-pi 1
-'
-EXPECT='ldd r9, Z+1
-'
-run_test
-
-# -------------------------------
-# LDS instruction
-NAME="AVR: [LDS]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx 80910201
-pi 1
-'
-EXPECT='lds r24, 0x102
-'
-run_test
-
-# -------------------------------
-# LSL instruction
-NAME="AVR: [LSL]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx 880f
-pi 1
-'
-EXPECT='lsl r24
-'
-run_test
-
-# -------------------------------
-# MOV instruction
-NAME="AVR: [MOV]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx 0f2e
-pi 1
-'
-EXPECT='mov r0, r31
-'
-run_test
-
-# -------------------------------
-# MOVW instruction
-NAME="AVR: [MOVW]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx b901
-pi 1
-'
-EXPECT='movw r22, r18
-'
-run_test
-
-# -------------------------------
-# ORI instruction
-NAME="AVR: [ORI]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx 8160
-pi 1
-'
-EXPECT='ori r24, 0x01
-'
-run_test
-
-# -------------------------------
-# OUT instruction
-NAME="AVR: [OUT]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx 9ebf
-pi 1
-'
-# TODO: should be out sph, r25
-EXPECT='out 0x3e, r25
-'
-run_test
-
-# -------------------------------
-# PUSH instruction
-NAME="AVR: [PUSH]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx df93
-pi 1
-'
-EXPECT='push r29
-'
-run_test
-
-# -------------------------------
-# RCALL instruction
-NAME="AVR: [RCALL]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx 01d0
-pi 1
-'
-EXPECT='rcall 0x4
-'
-run_test
-
-# -------------------------------
-# RJMP instruction
-NAME="AVR: [RJMP]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx 01c0
-pi 1
-'
-EXPECT='rjmp 0x4
-'
-run_test
-
-# -------------------------------
-# POP instruction
-NAME="AVR: [POP]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx cf91
-pi 1
-'
-EXPECT='pop r28
-'
-run_test
-
-# -------------------------------
-# RET instruction
-NAME="AVR: [RET]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx 0895
-pi 1
-'
-EXPECT='ret 
-'
-run_test
-
-# -------------------------------
-# RETI instruction
-NAME="AVR: [RETI]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx 1895
-pi 1
-'
-EXPECT='reti 
-'
-run_test
-
-# -------------------------------
-# ROL instruction
-NAME="AVR: [ROL]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx 991f
-pi 1
-'
-EXPECT='rol r25
-'
-run_test
-
-# -------------------------------
-# PUSH instruction
-NAME="AVR: [SBC]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx 390b
-pi 1
-'
-EXPECT='sbc r19, r25
-'
-run_test
-
-# -------------------------------
-# SBCI instruction
-NAME="AVR: [SBCI]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx 3f4f
-pi 1
-'
-EXPECT='sbci r19, 0xff
-'
-run_test
-
-# -------------------------------
-# SBIW instruction
-NAME="AVR: [SBIW]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx 0197
-pi 1
-'
-EXPECT='sbiw r24, 0x01
-'
-run_test
-
-# -------------------------------
-# SEI instruction
-NAME="AVR: [SEI]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx 7894
-pi 1
-'
-EXPECT='sei 
-'
-run_test
-
-# -------------------------------
-# SER instruction
-NAME="AVR: [SER]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx 8fef
-pi 1
-'
-EXPECT='ser r24
-'
-run_test
-
-# -------------------------------
-# SET instruction
-NAME="AVR: [SET]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx 6894
-pi 1
-'
-EXPECT='set 
-'
-run_test
-
-# -------------------------------
-# ST instruction
-NAME="AVR: [ST]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx 1082
-pi 1
-'
-EXPECT='st Z, r1
-'
-run_test
-
-# -------------------------------
-# STD instruction
-NAME="AVR: [STD]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx 1182
-pi 1
-'
-EXPECT='std Z+1, r1
-'
-run_test
-
-# -------------------------------
-# STS instruction
-NAME="AVR: [STS]"
+NAME="${PLUGIN} DISasm: [sts] - jump check"
 FILE=malloc://4096
 CMDS='
 e asm.arch=avr
-s 0x2d1
-wx 9093c007
-pi 1
-'
-EXPECT='sts 0x7c0, r25
-'
-run_test
-
-NAME="AVR: [STS] - jump check"
-FILE=malloc://4096
-CMDS='
-e asm.arch=avr
-s 0x2d1
+s 0x2d0
 wx 9093c007
 ao 1~jump
 '
@@ -699,47 +227,12 @@ EXPECT='jump: 0x00000000
 '
 run_test
 
-# -------------------------------
-# SUB instruction
-NAME="AVR: [SUB]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx 281b
-pi 1
-'
-EXPECT='sub r18, r24
-'
-run_test
+test_vector "${PLUGIN}" "sub r18, r24" 281b 2
+test_vector "${PLUGIN}" "subi r18, 0xff" 2f5f 2
+test_vector "${PLUGIN}" "tst r24" 8823 2
 
-# -------------------------------
-# SUBI instruction
-NAME="AVR: [SUBI]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx 2f5f
-pi 1
-'
-EXPECT='subi r18, 0xff
-'
-run_test
-
-# -------------------------------
-# TST instruction
-NAME="AVR: [TST]"
-FILE=malloc://32
-CMDS='
-e asm.arch=avr
-wx 8823
-pi 1
-'
-EXPECT='tst r24
-'
-run_test
-
-
-NAME='avr disasm negative baddr'
+# the next two is broken
+NAME="${PLUGIN} DISasm: negative baddr"
 BROKEN=1
 FILE=../../bins/elf/bugurtos-avr.elf
 ARGS=
@@ -754,7 +247,7 @@ call 0x18CE
 run_test
 
 
-NAME="avr empty disasm"
+NAME="${PLUGIN} DISasm: empty disasm"
 BROKEN=1
 FILE=-
 ARGS=
@@ -766,7 +259,7 @@ EXPECT='invalid
 '
 run_test
 
-NAME="avr opcode size"
+NAME="${PLUGIN} DISasm: opcode size"
 FILE=-
 ARGS=
 CMDS='e asm.arch=avr

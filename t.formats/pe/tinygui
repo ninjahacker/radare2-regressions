@@ -8,3 +8,13 @@ ARGS=''
 CMDS="q!"
 EXPECT=''
 run_test
+
+NAME='PE: corkami tinygui.exe - open'
+FILE=../../bins/pe/tinygui.exe
+BROKEN=
+IGNORE_ERR=1
+ARGS=''
+CMDS="il*"
+EXPECT='CCa entry0 user32.dll
+'
+run_test

@@ -1,0 +1,71 @@
+#!/bin/sh
+# GPL 3+ - Copyright (C) 2015  pancake
+for a in . .. ../.. ; do [ -e $a/tests.sh ] && . $a/tests.sh ; done
+
+NAME='syscall emu'
+BROKEN=
+FILE=../../bins/elf/hello.raw
+ARGS=
+CMDS='
+e asm.arch=x86
+e asm.bits=32
+e asm.os=linux
+e asm.emu=true
+e asm.bytes=0
+e asm.cmtcol=20
+e asm.lines=false
+pd 20~write,exit
+'
+EXPECT='Hello, world!
+ 0x00000018      int 0x80; 4 = write (1, "Hello, world!..", 14)
+ 0x00000020      int 0x80; 1 = exit (1)
+'
+run_test
+
+NAME='Windows Function EMU printf'
+BROKEN=
+FILE=../../bins/pe/standard.exe
+ARGS=
+CMDS='
+e asm.arch=x86
+e asm.bits=32
+e asm.os=windows
+e asm.emu=true
+e asm.emuwrite=true
+e asm.bytes=0
+e asm.cmtcol=20
+e asm.lines=false
+aeim
+s 0x00402ade
+pd 4~format
+'
+EXPECT='format : 0x00177ffc = 0x00177ffc -> 0x00402bd2   - RT_MANIFEST resource located
+'
+run_test
+
+NAME='Windows Function EMU LoadStringA'
+BROKEN=
+FILE=../../bins/pe/standard.exe
+ARGS=
+CMDS='
+e asm.arch=x86
+e asm.bits=32
+e asm.os=windows
+e asm.emu=true
+e asm.emuwrite=true
+e asm.bytes=0
+e asm.cmtcol=20
+e asm.lines=false
+aeim
+s 0x00402aee
+pd 10~HINSTANCE
+pd 10~UINT
+pd 10~LPTSTR
+pd 10~int
+'
+EXPECT='HINSTANCE:hInstance : 0x00177ff4 = 0x00000000
+           UINT:uID : 0x00177ff8 = 0x00000096
+    LPTSTR:lpBuffer : 0x00177ffc = 0x00177ffc -> 0x00402bfd 
+     int:nBufferMax : 0x00178000 = 31
+'
+run_test

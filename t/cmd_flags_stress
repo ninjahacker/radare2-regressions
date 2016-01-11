@@ -1,0 +1,24 @@
+#!/bin/sh
+for a in . .. ../.. ; do [ -e $a/tests.sh ] && . $a/tests.sh ; done
+
+NAME='no flags'
+CMDS='f patata
+f-*
+f~?
+'
+EXPECT='0
+'
+run_test
+
+NAME='no flags'
+FILE=../bins/elf/elf-relro
+BROKEN=
+CMDS='f patata
+fs *
+f-*
+f~?
+'
+EXPECT='0
+'
+run_test
+

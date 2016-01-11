@@ -1,0 +1,71 @@
+#!/bin/sh
+
+[ -e tests.sh ] && . ./tests.sh || . ../tests.sh
+
+NAME="an symbol"
+FILE=../bins/elf/hello-objc-linux
+BROKEN=
+CMDS='an sym.imp.__libc_start_main
+af
+afi~size
+'
+EXPECT=' size: 33
+'
+EXITCODE=0
+run_test
+
+NAME="an 0x08048550"
+FILE=../bins/elf/hello-objc-linux
+BROKEN=
+CMDS='an 0x08048550
+af
+afi~size
+'
+EXPECT=' size: 33
+'
+EXITCODE=0
+run_test
+
+NAME="an 0x00048550"
+FILE=../bins/elf/hello-objc-linux
+BROKEN=
+CMDS='an 0x00048550
+af
+afi~size
+'
+EXPECT=' size: 34
+'
+EXITCODE=0
+run_test
+
+NAME="without noreturn"
+FILE=../bins/elf/hello-objc-linux
+BROKEN=
+CMDS='
+af
+afi~size
+'
+EXPECT=' size: 34
+'
+EXITCODE=0
+run_test
+
+NAME="no no return"
+FILE=../bins/elf/hello-objc-linux
+BROKEN=
+CMDS='af
+af-
+afi~size
+'
+EXPECT=''
+EXITCODE=0
+run_test
+
+NAME="no no return 2"
+FILE=../bins/elf/hello-objc-linux
+CMDS='af
+af-*
+afi~size
+'
+EXPECT=''
+run_test

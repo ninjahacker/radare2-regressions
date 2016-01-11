@@ -99,3 +99,12 @@ EXPECT='hello
 world
 '
 run_test
+
+NAME='px~:1[3,5,0-1]'
+BROKEN=
+FILE=malloc://1024
+ARGS=
+CMDS='wx 102030405060708090;px~:1[3,5,0-1]'
+EXPECT='0x00000000 1020 5060 9000
+'
+run_test

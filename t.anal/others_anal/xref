@@ -1,5 +1,5 @@
 #!/bin/sh
-# LGPL - Copyright (C) 2014 Maijin
+# LGPL - Copyright (C) 2014-2015 Maijin, pancake
 
 for a in . .. ../.. ; do [ -e $a/tests.sh ] && . $a/tests.sh ; done
 
@@ -9,12 +9,12 @@ FILE=../../bins/elf/main
 IGNORE_ERR=1
 ARGS=
 CMDS='e asm.arch = x86.udis
-e scr.color=false
-e asm.anal = x86.udis
+e anal.arch = x86.udis
+e scr.color = false
 e scr.wheel = false
 aa
 axt @ str.Hello_World'
-EXPECT='d 0x40050a mov edi, str.Hello_World
+EXPECT='d 0x40050a mov edi, str.Hello_World in sym.main
 '
 run_test
 
@@ -24,12 +24,12 @@ FILE=../../bins/elf/main
 IGNORE_ERR=1
 ARGS=
 CMDS='e asm.arch = x86
-e asm.anal = x86.cs
+e anal.arch = x86
 e scr.color=false
 e scr.wheel = false
 aa
 axt @ str.Hello_World'
-EXPECT='d 0x40050a mov edi, str.Hello_World
+EXPECT='d 0x40050a mov edi, str.Hello_World in sym.main
 '
 run_test
 
@@ -40,12 +40,12 @@ FILE=../../bins/elf/ioli/crackme0x00
 IGNORE_ERR=1
 ARGS=
 CMDS='e asm.arch = x86
-e asm.anal = x86.cs
+e anal.arch = x86
 e scr.color=false
 e scr.wheel = false
 aa
 axt @ str.Password:'
-EXPECT='d 0x804843c mov dword [esp], str.Password:
+EXPECT='d 0x804843c mov dword [esp], str.Password: in sym.main
 '
 run_test
 
@@ -55,11 +55,63 @@ FILE=../../bins/elf/ioli/crackme0x00
 IGNORE_ERR=1
 ARGS=
 CMDS='e asm.arch = x86.udis
-e asm.anal = x86.udis
+e anal.arch = x86.udis
 e scr.color=false
 e scr.wheel = false
 aa
 axt @ str.Password:'
-EXPECT='d 0x804843c mov dword [esp], str.Password:
+EXPECT='d 0x804843c mov dword [esp], str.Password: in sym.main
+'
+run_test
+
+NAME="ax-"
+BROKEN=
+FILE=-
+IGNORE_ERR=1
+ARGS=
+CMDS='ax 10 20
+ax
+ax-10 20
+ax
+'
+EXPECT='types=code.jmp,code.call,data.mem,data.string
+ref.unk.0x14=0xa
+xref.unk.0xa=0x14
+types=code.jmp,code.call,data.mem,data.string
+'
+run_test
+
+NAME="ax-@"
+BROKEN=
+FILE=-
+IGNORE_ERR=1
+ARGS=
+CMDS='s 20
+ax 10
+ax
+ax-10
+ax
+'
+EXPECT='types=code.jmp,code.call,data.mem,data.string
+ref.unk.0x14=0xa
+xref.unk.0xa=0x14
+types=code.jmp,code.call,data.mem,data.string
+'
+run_test
+
+NAME="ax-*"
+BROKEN=
+FILE=-
+IGNORE_ERR=1
+ARGS=
+CMDS='ax 10
+ax
+ax-*
+ax
+'
+EXPECT='types=code.jmp,code.call,data.mem,data.string
+ref.unk.0x0=0xa
+xref.unk.0xa=0
+types=code.jmp,code.call,data.mem,data.string
 '
 run_test

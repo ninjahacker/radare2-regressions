@@ -1,0 +1,52 @@
+for a in . .. ../.. ; do [ -e $a/tests.sh ] && . $a/tests.sh ; done
+
+PLUGIN=avr
+
+NAME="avr br - forward branch"
+BROKEN=
+FILE=malloc://1024
+CMDS="
+wx 61f0 @ 0x136
+e asm.arch=avr
+ao 1 @ 0x136 ~jump[1]
+"
+EXPECT='0x00000150
+'
+run_test
+
+
+NAME="avr br - backward branch"
+BROKEN=
+FILE=malloc://1024
+CMDS="
+wx e1f7 @ 0x14a
+e asm.arch=avr
+ao 1 @ 0x14a ~jump[1]
+"
+EXPECT='0x00000144
+'
+run_test
+
+NAME="avr br - backward branch 2"
+BROKEN=
+FILE=malloc://1024
+CMDS="
+wx f0cf @ 0x14e
+e asm.arch=avr
+ao 1 @ 0x14e ~jump[1]
+"
+EXPECT='0x00000130
+'
+run_test
+
+NAME="avr jmp - absolute jump"
+BROKEN=
+FILE=malloc://1024
+CMDS="
+wx 0c941234 @ 0x15e
+e asm.arch=avr
+ao 1 @ 0x15e~jump[1]
+"
+EXPECT='0x00006824
+'
+run_test

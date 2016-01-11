@@ -1,0 +1,11 @@
+#!/bin/sh
+for a in . .. ../.. ; do [ -e $a/tests.sh ] && . $a/tests.sh ; done
+
+NAME='ELF: mips.elf'
+FILE=../../bins/elf/mips.elf
+ARGS='-A'
+CMDS="?v entry0"
+EXPECT='0x400ab0
+'
+run_test
+

@@ -22,7 +22,7 @@ run_test
 NAME="eax vs rax"
 BROKEN=
 CMDS='
-e asm.arch=x86.udis
+e asm.arch=x86.nz
 e asm.bits=32
 pa mov eax, 33
 pa mov rax, 33
@@ -41,7 +41,7 @@ run_test
 NAME="[rbp+4]"
 BROKEN=
 CMDS='
-e asm.arch=x86.udis
+e asm.arch=x86.nz
 e asm.bits=64
 pa mov [rbp+4],0
 pa mov [ebp+4],0
@@ -58,7 +58,7 @@ run_test
 NAME="jmp 0x1b"
 BROKEN=
 CMDS='
-e asm.arch=x86.udis
+e asm.arch=x86.nz
 e asm.bits=32
 pa jmp 0x1b @ 0x14
 '
@@ -73,5 +73,16 @@ wa sete al
 pi 1
 '
 EXPECT='sete al
+'
+run_test
+
+NAME="Test default assembler"
+BROKEN=
+CMDS='
+e asm.arch=x86
+e asm.bits=32
+pa jmp 0x1b @ 0x14
+'
+EXPECT='eb05
 '
 run_test

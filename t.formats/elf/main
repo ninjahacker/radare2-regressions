@@ -9,6 +9,37 @@ EXPECT='0x400506
 '
 run_test
 
+NAME='ELF: main rebased'
+FILE=../../bins/elf/pie-main
+ARGS='-B 0x200000'
+CMDS="?v main"
+EXPECT='0x203bd0
+'
+run_test
+
+NAME='ELF: main rebased'
+FILE=../../bins/elf/pie-main
+ARGS='-B 0x100000'
+CMDS="?v main"
+EXPECT='0x103bd0
+'
+run_test
+
+NAME='ELF: main rebased'
+FILE=../../bins/elf/main
+ARGS='-B 0x200000'
+CMDS="?v main"
+EXPECT='0x200506
+'
+run_test
+
+NAME='ELF: main rebased'
+FILE=-
+ARGS='-B 0x200000'
+CMDS="!rabin2 -qMB 0x200000 ../../bins/elf/main"
+EXPECT='2098438'
+run_test
+
 NAME='ELF: sym.main'
 FILE=../../bins/elf/main
 ARGS=''
@@ -30,5 +61,21 @@ FILE=../../bins/elf/mips-main
 ARGS=''
 CMDS="?v main"
 EXPECT='0x4006f0
+'
+run_test
+
+NAME='main non common LD script'
+FILE=../../bins/elf/custom_ldscript
+ARGS=''
+CMDS="?v main"
+EXPECT='0x1c00844
+'
+run_test
+
+NAME='main wrong sections'
+FILE=../../bins/elf/main_wrong_sect
+ARGS=''
+CMDS="?v main"
+EXPECT='0x400506
 '
 run_test

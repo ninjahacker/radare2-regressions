@@ -1,0 +1,28 @@
+#!/bin/sh
+
+# GPL 3+ - Copyright (C) 2015  pancake
+
+for a in . .. ../.. ; do [ -e $a/tests.sh ] && . $a/tests.sh ; done
+
+NAME='2step push x86-32'
+FILE=-
+ARGS=
+CMDS='
+e esil.debug=true
+e asm.arch=x86
+e asm.bits=32
+aei
+aeim
+aer esp=0x00108000
+.aer*
+"wa mov eax, 0x1234;push eax"
+2aes
+.aer*
+aer?esp
+?v [esp]
+'
+EXPECT='0x00107ffc
+0x1234
+'
+run_test
+

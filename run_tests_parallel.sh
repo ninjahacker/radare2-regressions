@@ -22,7 +22,7 @@ lock() {
 }
 
 unlock() {
-	mv lock deleteme && rm -f deleteme
+    rm -f lock
 }
 
 # Statistics.
@@ -52,9 +52,9 @@ fi
 
 . ./tests.sh
 
-r2 > /dev/null
+radare2 > /dev/null
 if [ $? != 0 ]; then
-    echo "Cannot find r2"
+    echo "Cannot find radare2"
     exit 1
 fi
 
@@ -63,8 +63,6 @@ TFS=""
 
 [ "${THREADS}" -lt 1 ] && THREADS=1
 [ -z "${THREADS}" ] && THREADS=8
-
-echo "==> Using $THREADS threads"
 
 FILE_SUCCESS=$(mktemp /tmp/.r2-stats.XXXXXX)
 FILE_FAILED=$(mktemp /tmp/.r2-stats.XXXXXX)
@@ -80,7 +78,7 @@ done
 
 runfile() {
   [ -z "$2" ] && return
-  if [ $THREADS -gt 1 ]; then
+  if [ $THREADS -gt 0 ]; then
     TF=`mktemp /tmp/.r2-tests.XXXXXX`
     TFS="${TFS} $TF"
     NTH=$(($NTH+1))
@@ -97,18 +95,12 @@ runfile() {
       unlock
     ) &
     if [ ${NTH} -ge $THREADS ]; then
-      NTH=0
+      NTH=1
       wait
       cat $TFS
       rm -f $TFS
       TFS=""
     fi
-# XXX counters fail here
-  else
-  (
-    cd $1
-    . ./$2
-  )
   fi
 }
 
@@ -120,12 +112,11 @@ cd $T || die "t/ doesn't exist"
 for file in * ; do
    [ "$file" = '*' ] && break
    if [ -d "$file" ]; then
-      for file2 in $(ls $file); do
-         TEST_NAME=$(echo "${file2}" | sed 's/.sh$//')
-	 NAME=`cd $file ; basename $file2`
-         #TEST_NAME=$file
-	 runfile ./$file/ ${file2}
-      done
+       for file2 in $file/*; do
+           NAME=`basename $file2`
+           TEST_NAME=$NAME
+           runfile ./$file/ $NAME
+       done
    elif [ ! -x "$file" ]; then  # Only run files marked as executable.
       print_found_nonexec "$file"
    else
@@ -149,14 +140,7 @@ rm -f ${FILES}
 
 print_report
 
-# Save statistics
-cd $R
-V=`r2 -v 2>/dev/null| grep ^rada| awk '{print $5}'`
-touch stats.csv
-grep -v "^$V" stats.csv > .stats.csv
-echo "$V,${TESTS_SUCCESS},${TESTS_FIXED},${TESTS_BROKEN},${TESTS_FAILED},${TESTS_FATAL},${FAILED}" >> .stats.csv
-sort .stats.csv > stats.csv
-rm -f .stats.csv
+save_stats
 
 # Exit codes, as documented in README.md
 if [ "${TESTS_FATAL}" -gt 0 ]; then

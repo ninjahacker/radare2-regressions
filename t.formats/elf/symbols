@@ -1,0 +1,74 @@
+#!/bin/sh
+# LGPL - Copyright (C) 2014 pancake
+
+for a in . .. ../.. ; do [ -e $a/tests.sh ] && . $a/tests.sh ; done
+
+NAME="symbols non common LD script"
+FILE=../../bins/elf/custom_ldscript
+ARGS=
+CMDS='is
+'
+EXPECT='[Symbols]
+vaddr=0x00600660 paddr=0x00000660 ord=026 fwd=NONE sz=0 bind=LOCAL type=NOTYPE name=__init_array_end
+vaddr=0x00600660 paddr=0x00000660 ord=027 fwd=NONE sz=0 bind=LOCAL type=OBJECT name=_DYNAMIC
+vaddr=0x00600660 paddr=0x00000660 ord=028 fwd=NONE sz=0 bind=LOCAL type=NOTYPE name=__init_array_start
+vaddr=0x006007f8 paddr=0x000007f8 ord=029 fwd=NONE sz=0 bind=LOCAL type=OBJECT name=_GLOBAL_OFFSET_TABLE_
+vaddr=0x00400520 paddr=0x00000520 ord=030 fwd=NONE sz=2 bind=GLOBAL type=FUNC name=__libc_csu_fini
+vaddr=0x00600830 paddr=0x00000830 ord=031 fwd=NONE sz=0 bind=UNKNOWN type=NOTYPE name=data_start
+vaddr=0x00600834 paddr=0x00600834 ord=032 fwd=NONE sz=0 bind=GLOBAL type=NOTYPE name=_edata
+vaddr=0x00400524 paddr=0x00000524 ord=033 fwd=NONE sz=0 bind=GLOBAL type=FUNC name=_fini
+vaddr=0x00400450 paddr=0x00000450 ord=035 fwd=NONE sz=49 bind=GLOBAL type=FUNC name=process
+vaddr=0x00600830 paddr=0x00000830 ord=037 fwd=NONE sz=0 bind=GLOBAL type=NOTYPE name=__data_start
+vaddr=0x00400548 paddr=0x00000548 ord=039 fwd=NONE sz=4 bind=GLOBAL type=OBJECT name=_IO_stdin_used
+vaddr=0x004004b0 paddr=0x000004b0 ord=040 fwd=NONE sz=101 bind=GLOBAL type=FUNC name=__libc_csu_init
+vaddr=0x00600838 paddr=0x00600838 ord=041 fwd=NONE sz=0 bind=GLOBAL type=NOTYPE name=_end
+vaddr=0x00400481 paddr=0x00000481 ord=042 fwd=NONE sz=0 bind=GLOBAL type=FUNC name=_start
+vaddr=0x00600834 paddr=0x00600834 ord=043 fwd=NONE sz=0 bind=GLOBAL type=NOTYPE name=__bss_start
+vaddr=0x01c00844 paddr=0x00200844 ord=044 fwd=NONE sz=128 bind=GLOBAL type=FUNC name=main
+vaddr=0x01a00838 paddr=0x00000838 ord=045 fwd=NONE sz=8 bind=GLOBAL type=OBJECT name=obj
+vaddr=0x01c00840 paddr=0x00200840 ord=047 fwd=NONE sz=4 bind=GLOBAL type=OBJECT name=glob
+vaddr=0x004003d8 paddr=0x000003d8 ord=048 fwd=NONE sz=0 bind=GLOBAL type=FUNC name=_init
+vaddr=0x00400410 paddr=0x00000410 ord=001 fwd=NONE sz=16 bind=GLOBAL type=FUNC name=imp.printf
+vaddr=0x00400420 paddr=0x00000420 ord=002 fwd=NONE sz=16 bind=GLOBAL type=FUNC name=imp.__libc_start_main
+vaddr=0x00400430 paddr=0x00000430 ord=003 fwd=NONE sz=16 bind=UNKNOWN type=NOTYPE name=imp.__gmon_start__
+vaddr=0x00400440 paddr=0x00000440 ord=004 fwd=NONE sz=16 bind=GLOBAL type=FUNC name=imp.atoi
+
+23 symbols
+'
+
+run_test
+
+NAME="symbols with no sections header information"
+FILE=../../bins/elf/main_nosect
+ARGS=
+CMDS='is
+'
+EXPECT='[Symbols]
+vaddr=0x004003e0 paddr=0x000003e0 ord=001 fwd=NONE sz=16 bind=GLOBAL type=FUNC name=imp.puts
+vaddr=0x004003f0 paddr=0x000003f0 ord=002 fwd=NONE sz=16 bind=GLOBAL type=FUNC name=imp.__libc_start_main
+vaddr=0x00400400 paddr=0x00000400 ord=003 fwd=NONE sz=16 bind=UNKNOWN type=NOTYPE name=imp.__gmon_start__
+
+3 symbols
+'
+run_test
+
+NAME="symbols with no sections header information 2"
+FILE=../../bins/elf/clark
+ARGS=
+CMDS='is
+'
+EXPECT='[Symbols]
+vaddr=0x080487dc paddr=0x000007dc ord=008 fwd=NONE sz=4 bind=GLOBAL type=OBJECT name=_IO_stdin_used
+vaddr=0x08048370 paddr=0x00000370 ord=001 fwd=NONE sz=16 bind=GLOBAL type=FUNC name=imp.mprotect
+vaddr=0x08048380 paddr=0x00000380 ord=002 fwd=NONE sz=16 bind=GLOBAL type=FUNC name=imp.puts
+vaddr=0x08048390 paddr=0x00000390 ord=003 fwd=NONE sz=16 bind=UNKNOWN type=NOTYPE name=imp.__gmon_start__
+vaddr=0x080483a0 paddr=0x000003a0 ord=004 fwd=NONE sz=16 bind=GLOBAL type=FUNC name=imp.exit
+vaddr=0x080483b0 paddr=0x000003b0 ord=005 fwd=NONE sz=16 bind=GLOBAL type=FUNC name=imp.__libc_start_main
+vaddr=0x080483c0 paddr=0x000003c0 ord=006 fwd=NONE sz=16 bind=GLOBAL type=FUNC name=imp.ptrace
+vaddr=0x080483d0 paddr=0x000003d0 ord=007 fwd=NONE sz=16 bind=GLOBAL type=FUNC name=imp.calloc
+
+8 symbols
+'
+
+
+run_test

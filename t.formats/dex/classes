@@ -1,0 +1,27 @@
+#!/bin/sh
+for a in . .. ../.. ; do [ -e $a/tests.sh ] && . $a/tests.sh ; done
+
+HELLO=../../bins/dex/Hello.dex
+HELLOSLACK=../../bins/dex/HelloSlack.dex
+
+NAME='DEX classes'
+FILE=${HELLO}
+ARGS=''
+BROKEN=
+IGNORE_ERR=1
+CMDS="ic"
+EXPECT='0x00000174 class 0 Hello
+0x00000194 method 0 init>.LHello.._init_._init_
+0x000001b0 method 1 init>.LHello.._init_.main
+'
+run_test
+
+NAME='DEX classes quiet'
+FILE=${HELLO}
+ARGS=''
+BROKEN=
+IGNORE_ERR=1
+CMDS="icq"
+EXPECT='0x00000174 Hello
+'
+run_test

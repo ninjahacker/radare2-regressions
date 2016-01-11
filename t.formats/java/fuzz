@@ -1,20 +1,40 @@
 #!/bin/sh
 
-# GPL 3+ - Copyright (C) 2013  pancake
+# GPL 3+ - Copyright (C) 2015  pancake
 
 for a in . .. ../.. ; do [ -e $a/tests.sh ] && . $a/tests.sh ; done
 
 fuzz_test() {
-NAME="java fuzz $1"
-IGNORE_ERR=1
-BROKEN=
-FILE=$2
-ARGS=
-CMDS='q'
-EXPECT=''
-run_test
+	NAME="java fuzz $1"
+	IGNORE_ERR=1
+	BROKEN=
+	FILE=$2
+	ARGS=
+	CMDS='q'
+	EXPECT=''
+	run_test
 }
 
-fuzz_test 1 ../../bins/java/fuzz-jox01
-fuzz_test 2 ../../bins/java/fuzz-jox02
-fuzz_test 3 ../../bins/java/fuzz-jox03
+FUZZED_FILES="
+3ad48573bb88d13d21f8f1a1031bdbb1
+db3d80b14cb52964a7e4f902b176d211
+6cd6d9b1e65cefb5d07076737cec6e0e
+7282bf73d768de789f60623e0d17ca1f
+c4620e044d32403f7c83b74fe3a3dbc9
+db10e3103b4defa8fc76892665a14a89
+5a1a113d300ed93d21288a3314bd0679
+zin7a5.class
+fuzz-rs-57c2.class
+fuzz-jox01
+fuzz-jox02
+fuzz-jox03
+7cc0970af593532fcf484a17dac1563e
+d517740536bfa70d64cc4e1243f11dcb
+256996efe37d69100bf09cf3a07cbffc
+"
+
+# dat 25* only crashes in asan
+
+for a in ${FUZZED_FILES} ; do
+	fuzz_test $a ../../bins/java/$a
+done

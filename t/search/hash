@@ -1,0 +1,13 @@
+#!/bin/sh
+for a in . .. ../.. ; do [ -e $a/tests.sh ] && . $a/tests.sh ; done
+
+FILE=../../bins/elf/x86-helloworld-gcc
+NAME="search count"
+IGNORE_ERR=1
+CMDS='#crc32 @ $$+10
+/#crc32 83618b8a'
+EXPECT='83618b8a
+f hash.crc32.83618b8a = 0x804830a
+'
+run_test
+

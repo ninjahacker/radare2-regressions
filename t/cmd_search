@@ -4,11 +4,111 @@
 
 # "!" - run commands (via system)
 
-NAME='Rop search'
+NAME='/ search'
 FILE='malloc://1024'
 ARGS=
 BROKEN=
 CMDS='
+wx 666f6f00
+/ foo\x00
+'
+EXPECT='0x00000000 hit0_0 "foo\\u0000"
+'
+run_test
+
+NAME='/j search'
+FILE='malloc://1024'
+ARGS=
+BROKEN=
+CMDS='
+wx 666f6f00
+/j foo\x00
+'
+EXPECT='[{"offset": 0,"id:":0,"data":""foo\\u0000""}]
+'
+run_test
+
+NAME='/! search'
+FILE='malloc://1024'
+ARGS=
+BROKEN=
+CMDS='
+wx 666f6f00
+/! ff
+'
+EXPECT='0x00000000 hit0_0 "fo"
+'
+run_test
+
+NAME='/!x search'
+FILE='malloc://1024'
+ARGS=
+BROKEN=
+CMDS='
+wx 666f6f00
+/!x 00
+'
+EXPECT='0x00000000 hit0_0 66
+'
+run_test
+
+NAME='// search'
+FILE='malloc://1024'
+ARGS=
+BROKEN=
+CMDS='
+wx 666f6f00
+/!x 00
+//
+'
+EXPECT='0x00000000 hit0_0 66
+0x00000000 hit1_0 66
+'
+run_test
+
+NAME='// search'
+FILE='malloc://1024'
+ARGS=
+BROKEN=
+CMDS='
+wx 666f6f00
+/!x 00
+//
+'
+EXPECT='0x00000000 hit0_0 66
+0x00000000 hit1_0 66
+'
+run_test
+
+NAME='/a search'
+FILE='malloc://1024'
+ARGS=
+BROKEN=
+CMDS='e asm.bits=32
+"wa add esp,8;pop ebx; pop ebp; ret"
+/a add esp, 8
+'
+EXPECT='0x00000000 hit0_0 83c408
+'
+run_test
+
+NAME='/A search'
+FILE='malloc://1024'
+ARGS=
+BROKEN=
+CMDS='e asm.bits=32
+"wa add esp,8;pop ebx; pop ebp; ret"
+/A ret
+'
+EXPECT='0x00000005 - 1 ret
+'
+run_test
+
+NAME='Rop search'
+FILE='malloc://1024'
+ARGS=
+BROKEN=
+CMDS='e asm.bits=32
 "wa add esp,8;pop ebx; pop ebp; ret"
 e scr.color=false
 /R
@@ -35,7 +135,7 @@ NAME='Rop search w/ regexp'
 FILE='malloc://1024'
 ARGS=
 BROKEN=
-CMDS='
+CMDS='e asm.bits=32
 "wa add esp,8;pop ebx; pop ebp; ret"
 e scr.color=false
 /R/ or.*bl
@@ -52,7 +152,7 @@ NAME='Rop search w/ branch delay (mips)'
 FILE='malloc://1024'
 ARGS=
 BROKEN=
-CMDS='
+CMDS='e asm.bits=32
 e asm.arch = mips
 e scr.color=false
 "wx 1b000000040000001a0000004c08410018000000040000000800000000000070"

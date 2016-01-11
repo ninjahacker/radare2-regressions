@@ -11,7 +11,7 @@ run_test
 
 NAME='PE: dllnullEP - entrypoint'
 FILE=../../bins/pe/dllnullep.dll
-BROKEN=
+BROKEN=1
 IGNORE_ERR=1
 ARGS='-n'
 CMDS="!rabin2 -eq ${FILE} "

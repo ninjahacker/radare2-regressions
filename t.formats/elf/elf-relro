@@ -5,8 +5,8 @@ NAME='ELF: corkami elf-relro - sections'
 FILE=../../bins/elf/elf-relro
 ARGS=''
 CMDS="S~rel"
-EXPECT='[08] . 0x0000027c r-- va=0x0804827c sz=0x0008 vsz=0x0008 .rel.dyn
-[09] . 0x00000284 r-- va=0x08048284 sz=0x0010 vsz=0x0010 .rel.plt
+EXPECT='[08] . 0x0000027c -r-- va=0x0804827c sz=0x0008 vsz=0x0008 .rel.dyn
+[09] . 0x00000284 -r-- va=0x08048284 sz=0x0010 vsz=0x0010 .rel.plt
 '
 run_test
 
@@ -15,6 +15,6 @@ FILE=../../bins/elf/elf-relro
 ARGS=''
 CMDS="ik~relro"
 
-EXPECT='elf.relro=true
+EXPECT='elf.relro=partial relro
 '
 run_test

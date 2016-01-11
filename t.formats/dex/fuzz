@@ -1,11 +1,11 @@
 #!/bin/sh
 
-# GPL 3+ - Copyright (C) 2014  pancake
+# GPL 3+ - Copyright (C) 2014-2015  pancake
 
 for a in . .. ../.. ; do [ -e $a/tests.sh ] && . $a/tests.sh ; done
 
 fuzz_test() {
-NAME="DEX fuzz $1"
+NAME="DEX fuzz $1 $2"
 IGNORE_ERR=1
 BROKEN=
 FILE=$2
@@ -21,4 +21,5 @@ fuzz_test 3 ../../bins/dex/fuzz-oobuleb.dex
 fuzz_test 4 ../../bins/dex/fuzz-rbufneg.dex
 fuzz_test 5 ../../bins/dex/fuzz-uninitstr.dex
 fuzz_test 6 ../../bins/dex/fuzz-method.dex
+fuzz_test 7 ../../bins/fuzzed/id053
 

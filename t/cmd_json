@@ -11,7 +11,7 @@ e asm.bits=64
 wx 4883c768
 pDj 4
 '
-EXPECT='[{"offset":0,"fcn_addr":0,"fcn_last":0,"size":4,"opcode":"add rdi, 0x68","bytes":"4883c768","type":"add","type_num":17,"type2_num":0}]
+EXPECT='[{"offset":0,"fcn_addr":0,"fcn_last":0,"size":4,"opcode":"add rdi, 0x68","bytes":"4883c768","family":"cpu","type":"add","type_num":17,"type2_num":0}]
 
 '
 run_test

@@ -51,15 +51,14 @@ run_test
 
 NAME='rax2 3.33f'
 CMDS='!rax2 3.33f'
-EXPECT='Fxb81e5540
+EXPECT='Fx40551eb8
 '
 run_test
 
 NAME='rax2 Fx40551ed8'
 CMDS='!rax2 Fx40551ed8'
-EXPECT='3.33f
+EXPECT='3.330008f
 '
-BROKEN=1
 run_test
 
 NAME='rax2 35o'
@@ -105,7 +104,7 @@ EXPECT='6161646d696e61
 run_test
 
 NAME='echo "414141" | rax2 -s '
-CMDS='!echo -n "414141" | rax2 -s'
+CMDS='!printf 414141 | rax2 -s'
 EXPECT='AAA'
 run_test
 
@@ -154,11 +153,28 @@ NAME='cat ../../bins/other/shellcode.c | rax2 -F'
 CMDS='!cat ../../bins/other/shellcode.c | rax2 -F'
 EXPECT='31c050686e2f7368682f2f626989e35089e25389e1b00bcd80
 '
-BROKEN=1
+run_test
+
+NAME='{0x33,33,23,32}'
+CMDS="echo 'main() {const char *foo = {0x33,33,23,23,23,23,4,13,32,23,32,23,32};}' | rax2 -F"
+EXPECT='332117171717040d2017201720
+'
+run_test
+
+NAME='"\x33\x44\x88"'
+CODE='main(){const char *foo = "\x33\x44\x88"; }'
+CMDS="echo '${CODE}' | rax2 -F"
+EXPECT='334488
+'
 run_test
 
 NAME='rax2 -s 43 4a 50'
 CMDS='!rax2 -s 43 4a 50'
+EXPECT='CJP'
+run_test
+
+NAME='rax2 -s 434a50'
+CMDS='!rax2 -s 434a50'
 EXPECT='CJP'
 run_test
 
@@ -169,8 +185,8 @@ EXPECT='434a50
 run_test
 
 NAME='rax2 -t 1234567890'
-CMDS='!rax2 -t 1234567890'
-EXPECT='2009-02-13 23:31:30 +0000
+CMDS='!rax2 -t 1234567890 | cut -d " " -f 1,2'
+EXPECT='2009-02-13 23:31:30
 '
 run_test
 
@@ -184,12 +200,6 @@ run_test
 NAME='rax2 -u 3000'
 CMDS='!rax2 -u 3000'
 EXPECT='2.9K
-'
-run_test
-
-NAME='rax2 -v~commit?"'
-CMDS='!!rax2 -v~commit?'
-EXPECT='1
 '
 run_test
 

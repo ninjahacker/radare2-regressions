@@ -8,7 +8,7 @@ w hello
 Cs 6
 pd 1
 '
-EXPECT='           0x00000000     .string "hello" ; len=6
+EXPECT='            0x00000000     .string "hello" ; len=6
 '
 run_test
 
@@ -17,12 +17,13 @@ NAME="Cs : concatenated strings bug"
 BROKEN=
 CMDS='
 w hello\x00world
+e asm.linesup=0
 Cs 6
 Cs 6@6
 pd 2
 '
-EXPECT='           0x00000000     .string "hello" ; len=6
-           0x00000006     .string "world" ; len=6
+EXPECT='            0x00000000     .string "hello" ; len=6
+            0x00000006     .string "world" ; len=6
 '
 run_test
 
@@ -32,12 +33,13 @@ NAME="Cs : concatenated strings bug"
 BROKEN=
 CMDS='
 w hello\x00world
+e asm.linesup=0
 Cs 6
 Cs 6@6
 pd 2
 '
-EXPECT='           0x00000000     .string "hello" ; len=6
-           0x00000006     .string "world" ; len=6
+EXPECT='            0x00000000     .string "hello" ; len=6
+            0x00000006     .string "world" ; len=6
 '
 run_test
 
@@ -61,8 +63,8 @@ Ch 2
 pd 2
 Ch-
 '
-EXPECT='           0x00000000 (2 bytes hidden)
-           0x00000002    89e5           mov ebp, esp
+EXPECT='            0x00000000 (2 bytes hidden)
+            0x00000002      89e5           mov ebp, esp
 '
 run_test
 
@@ -78,5 +80,18 @@ C*~?
 '
 EXPECT='1
 0
+'
+run_test
+
+NAME="formata memory metadata"
+FILE=-
+ARGS=
+CMDS='wx 41424344
+Cf 4 x
+pd 1
+'
+EXPECT='            0x00000000 format x {
+0x00000000 = 0x44434241
+} 4
 '
 run_test

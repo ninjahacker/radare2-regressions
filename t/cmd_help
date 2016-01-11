@@ -165,3 +165,39 @@ EXPECT='0x400
 0x42
 '
 run_test
+
+NAME="?v 'A'"
+FILE=malloc://1024
+ARGS=
+CMDS="?v 'A'
+"
+EXPECT='0x41
+'
+run_test
+
+NAME="?v 'A'+3"
+FILE=malloc://1024
+ARGS=
+CMDS="?v 'A'+3
+"
+EXPECT='0x44
+'
+run_test
+
+NAME="?v 3+'A'-3"
+FILE=malloc://1024
+ARGS=
+CMDS="?v 3+'A'-3
+"
+EXPECT='0x41
+'
+run_test
+
+NAME="?v 33^'A'"
+FILE=malloc://1024
+ARGS=
+CMDS="?v 32^'A'
+"
+EXPECT='0x61
+'
+run_test

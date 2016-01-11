@@ -15,7 +15,7 @@ run_test
 NAME='cond'
 FILE=-
 ARGS=
-CMDS='ae 1,1,==,%z,?{,1,}{,2,}'
+CMDS='ae 1,1,==,$z,?{,1,}{,2,}'
 EXPECT='1
 '
 run_test
@@ -24,7 +24,7 @@ NAME='cond tail'
 FILE=-
 BROKEN=
 ARGS=
-CMDS='ae 1,1,==,%z,?{,1,}{,2,},3'
+CMDS='ae 1,1,==,$z,?{,1,}{,2,},3'
 EXPECT='3
 1
 '
@@ -34,7 +34,7 @@ NAME='cond neg'
 FILE=-
 BROKEN=
 ARGS=
-CMDS='ae 1,1,==,%z,!,?{,1,}{,2,}'
+CMDS='ae 1,1,==,$z,!,?{,1,}{,2,}'
 EXPECT='2
 '
 run_test
@@ -44,7 +44,7 @@ NAME='cond neg tail'
 FILE=-
 BROKEN=
 ARGS=
-CMDS='ae 1,1,==,%z,!,?{,1,}{,2,},3'
+CMDS='ae 1,1,==,$z,!,?{,1,}{,2,},3'
 EXPECT='3
 2
 '

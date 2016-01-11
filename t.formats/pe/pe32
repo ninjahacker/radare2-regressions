@@ -8,5 +8,13 @@ s
 '
 EXPECT='0x401000
 '
+run_test
+
+
+BROKEN=
+FILE=../../bins/pe/vista-glass.exe
+CMDS='q!
+'
+EXPECT=''
 
 run_test

@@ -1,42 +1,43 @@
 for a in . .. ../.. ; do [ -e $a/tests.sh ] && . $a/tests.sh ; done
 
-ARCH=arm.gnu
-
 NAME="ldr code analysis"
-BROKEN=1
 FILE=malloc://32
 CMDS="
-wx 20c09fe5
-wx 0cc09ae7 @ 4
-e asm.arch=${ARCH}
+wx 20c09fe5 0cc09ae7
+e asm.arch=arm
 e asm.bits=32
 # pd 2 - note different colors
 pi 2
 ao~type[2]
 ao@4~type[2]
 "
-EXPECT='ldr ip, [pc, 32] ; 0x00000028
+EXPECT='ldr ip, [pc, 0x20]
 ldr ip, [sl, ip]
-opcode: ldr ip, [pc, 32] ; 0x00000028
+address: 0x0
+opcode: ldr ip, [pc, 0x20]
 prefix: 0
 bytes: 20c09fe5
 ptr: 0x00000028
 refptr: 4
 size: 4
 type: load
+type2: null
+esil: 8,pc,+,32,+,[4],ip,=
 stack: null
-cond: 6
-family: unknown
+cond: 0
+family: cpu
+address: 0x4
 opcode: ldr ip, [sl, ip]
 prefix: 0
 bytes: 0cc09ae7
-ptr: 0x00000000
 refptr: 4
 size: 4
 type: load
+type2: null
+esil: sl,0,+,[4],ip,=
 stack: null
-cond: 6
-family: unknown
+cond: 0
+family: cpu
 '
 run_test
 
@@ -44,7 +45,7 @@ NAME="endian"
 BROKEN=
 FILE=malloc://32
 CMDS="
-e asm.arch=${ARCH}
+e asm.arch=arm.gnu
 e asm.bits=32
 wx e59a9ae7
 e cfg.bigendian=false
@@ -54,5 +55,20 @@ pi 1@0
 "
 EXPECT='ldr r9, [sl, r5, ror 21]
 ldr r9, [sl, 2791]
+'
+run_test
+
+NAME="ldr thumb"
+BROKEN=
+FILE=malloc://32
+CMDS="
+e asm.arch=arm
+e asm.bits=16
+wx 2249224a
+ao~^ptr
+ao@2~^ptr
+"
+EXPECT='ptr: 0x0000008c
+ptr: 0x0000008c
 '
 run_test

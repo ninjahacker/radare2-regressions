@@ -12,7 +12,7 @@ run_test
 NAME='MZ: jman.exe - entrypoint'
 FILE=../../bins/pe/jman.exe
 ARGS=''
-BROKEN=1
+BROKEN=
 CMDS="pi 1"
 EXPECT='mov ax, 0x2df3
 '

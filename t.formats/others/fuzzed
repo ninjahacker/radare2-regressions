@@ -1,87 +1,29 @@
 #!/bin/sh
 for a in . .. ../.. ; do [ -e $a/tests.sh ] && . $a/tests.sh ; done
 
-fuzz_test() {
-NAME="Other Fuzz $1"
-IGNORE_ERR=1
-BROKEN=
-FILE=$1
-ARGS=
-CMDS='aa ; q'
-EXPECT=''
-run_test
+fuzz_test_aaq() {
+  NAME="Other Fuzz aa ; q $1"
+  IGNORE_ERR=1
+  BROKEN=
+  FILE=$1
+  ARGS=
+  CMDS='aa ; q'
+  EXPECT=''
+  run_test
 }
 
-fuzz_test ../../bins/fuzzed/id031
-fuzz_test ../../bins/fuzzed/id049
-fuzz_test ../../bins/fuzzed/id053
-fuzz_test ../../bins/fuzzed/id062
-fuzz_test ../../bins/fuzzed/id063
-fuzz_test ../../bins/fuzzed/id064
-fuzz_test ../../bins/fuzzed/id065
-fuzz_test ../../bins/fuzzed/id067
-fuzz_test ../../bins/fuzzed/id070
-fuzz_test ../../bins/fuzzed/id071
-fuzz_test ../../bins/fuzzed/id073
-fuzz_test ../../bins/fuzzed/id076
-fuzz_test ../../bins/fuzzed/id082
-fuzz_test ../../bins/fuzzed/id083
-fuzz_test ../../bins/fuzzed/id084
-fuzz_test ../../bins/fuzzed/id085
-fuzz_test ../../bins/fuzzed/id089
-fuzz_test ../../bins/fuzzed/id090
-fuzz_test ../../bins/fuzzed/id091
-fuzz_test ../../bins/fuzzed/id092
-fuzz_test ../../bins/fuzzed/id093
-fuzz_test ../../bins/fuzzed/id095
-fuzz_test ../../bins/fuzzed/id097
-fuzz_test ../../bins/fuzzed/id099  
-fuzz_test ../../bins/fuzzed/id100
-fuzz_test ../../bins/fuzzed/id101
-fuzz_test ../../bins/fuzzed/id103
-fuzz_test ../../bins/fuzzed/id104
-fuzz_test ../../bins/fuzzed/id105
-fuzz_test ../../bins/fuzzed/id108
-fuzz_test ../../bins/fuzzed/id109
-fuzz_test ../../bins/fuzzed/id110
-fuzz_test ../../bins/fuzzed/id111
-fuzz_test ../../bins/fuzzed/id114
-fuzz_test ../../bins/fuzzed/id125
-fuzz_test ../../bins/fuzzed/id128
-fuzz_test ../../bins/fuzzed/id129
-fuzz_test ../../bins/fuzzed/id131
-fuzz_test ../../bins/fuzzed/id136
-fuzz_test ../../bins/fuzzed/id142
-fuzz_test ../../bins/fuzzed/id144
-fuzz_test ../../bins/fuzzed/id146
-fuzz_test ../../bins/fuzzed/id149
-fuzz_test ../../bins/fuzzed/id150
-fuzz_test ../../bins/fuzzed/id153
-fuzz_test ../../bins/fuzzed/id154
-fuzz_test ../../bins/fuzzed/id156
-fuzz_test ../../bins/fuzzed/id160
-fuzz_test ../../bins/fuzzed/id162
-fuzz_test ../../bins/fuzzed/id164  
-fuzz_test ../../bins/fuzzed/id168
-fuzz_test ../../bins/fuzzed/id169
-fuzz_test ../../bins/fuzzed/id171
-fuzz_test ../../bins/fuzzed/id181
-fuzz_test ../../bins/fuzzed/id187
-fuzz_test ../../bins/fuzzed/id189
-fuzz_test ../../bins/fuzzed/id190
-fuzz_test ../../bins/fuzzed/id191
-fuzz_test ../../bins/fuzzed/id196
-fuzz_test ../../bins/fuzzed/id198
-fuzz_test ../../bins/fuzzed/id199
-fuzz_test ../../bins/fuzzed/id201
-fuzz_test ../../bins/fuzzed/id204
-fuzz_test ../../bins/fuzzed/id208
-fuzz_test ../../bins/fuzzed/id227
-fuzz_test ../../bins/fuzzed/id233
-fuzz_test ../../bins/fuzzed/id238
-fuzz_test ../../bins/fuzzed/id241
-fuzz_test ../../bins/fuzzed/id242
-fuzz_test ../../bins/fuzzed/id262
-fuzz_test ../../bins/fuzzed/id266
-fuzz_test ../../bins/fuzzed/id274
-fuzz_test ../../bins/fuzzed/id275
+fuzz_test_aacq() {
+  NAME="Other Fuzz aac ; q $1"
+  IGNORE_ERR=1
+  BROKEN=
+  FILE=$1
+  ARGS=
+  CMDS='aac ; q'
+  EXPECT=''
+  run_test
+}
+
+for f in ../../bins/fuzzed/* ; do
+  fuzz_test_aaq "$f"
+  fuzz_test_aacq "$f"
+done

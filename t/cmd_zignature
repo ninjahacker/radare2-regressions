@@ -2,6 +2,20 @@
 # GPL 3+ - Copyright (C) 2012  pancake, Edd Barrett, Simon Ruderich
 for a in . .. ../.. ; do [ -e $a/tests.sh ] && . $a/tests.sh ; done
 
+NAME='z xref'
+FILE=../bins/elf/hello-linux-x86_64
+CMDS='
+s entry0
+zb test fc044000e8b7
+fs sign
+f~?
+.z/ $$ $$+1024
+f~?
+'
+EXPECT='0
+1
+'
+run_test
 
 NAME='zb'
 FILE=../bins/elf/go_stripped
@@ -13,6 +27,7 @@ EXPECT='Loaded 1 signatures
   1 byte signatures
   0 head signatures
   0 func signatures
+Found 0 matches
 '
 run_test
 
@@ -21,19 +36,22 @@ FILE=../bins/elf/go_stripped
 CMDS='
 zb sym.fmt.Println 653b2530000000724b53b834e7150883ec188b15401c22088d4c24048b5c242083ec08ff742434ff742434ff742434525051e829ffffff8b44242089038b4424248943048b44242889430889d883c4345bc204006a106a1ce85e350700c20400
 .z/ section..text section..text+1074039
-?v sign.sign.b.sym.fmt.Println
+?v sign.sys.b.sym.fmt.Println
 '
 EXPECT='0x805b030
 '
 run_test
-NAME='z xref'
+
+
+NAME='z + aac + axt'
 FILE=../bins/elf/go_stripped
 CMDS='
 zb sym.fmt.Println 653b2530000000724b53b834e7150883ec188b15401c22088d4c24048b5c242083ec08ff742434ff742434ff742434525051e829ffffff8b44242089038b4424248943048b44242889430889d883c4345bc204006a106a1ce85e350700c20400
 .z/ section..text section..text+1074039
-aa
+e anal.hasnext=0
+aac
 axt 0x805b030
 '
-EXPECT='C 0x8049adb call sign.sign.b.sym.fmt.Println
+EXPECT='C 0x8049adb call sign.sys.b.sym.fmt.Println in fcn.08049a6c
 '
 run_test

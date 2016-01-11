@@ -1,4 +1,5 @@
 #import <Foundation/Foundation.h>
+//@import Foundation;
 
 @interface Test : NSObject {
 	/* instance variables */
@@ -7,9 +8,10 @@
 - (void)sayHello:(int)i;
 @end
 
-main() {
+int main() {
 	Test *o = [[Test alloc] init];
 	[o sayHello:3];
+	return 0;
 }
 
 @implementation Test

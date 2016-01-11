@@ -25,6 +25,6 @@ r
 pd 1
 '
 EXPECT='512
-           0x00000000    90             nop
+            0x00000000      90             nop
 '
 run_test

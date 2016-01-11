@@ -14,7 +14,7 @@ run_test
 NAME='PE: corkami aslr.dll - DYNAMIC_BASE/ASLR enabled'
 FILE=../../bins/pe/aslr.dll
 ARGS='-n'
-CMDS="!rabin2 -I ${FILE} | grep \"pic      true\" "
+CMDS="!rabin2 -I ${FILE} | grep pic | grep true"
 EXPECT_ERR=""
 EXPECT='pic      true
 '

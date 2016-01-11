@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# GPL 3+ - Copyright (C) 2013-2015  pancake
+
+for a in . .. ../.. ; do [ -e $a/tests.sh ] && . $a/tests.sh ; done
+F=../../bins/mdmp/jusched.dmp
+
+NAME='mdmp'
+IGNORE_ERR=1
+FILE=$F
+BROKEN=1
+ARGS=
+CMDS='ie~addr
+'
+EXPECT='vaddr=0x00401280 paddr=0x00000680 baddr=0x00400000 laddr=0x00000000
+'
+run_test
+

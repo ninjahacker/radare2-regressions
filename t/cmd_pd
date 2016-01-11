@@ -2,15 +2,48 @@
 
 [ -e tests.sh ] && . ./tests.sh || . ../tests.sh
 
+NAME='asm.filter issue'
+FILE=malloc://1024
+ARGS=
+CMDS='
+e asm.filter=1
+e asm.arch=arm
+e asm.bits=64
+
+wx fa67bba9
+pd 1
+'
+EXPECT="            0x00000000      fa67bba9       stp x26, x25, [sp, -0x50]!  ; 'P'
+"
+run_test
+
+NAME='asm.filter issue'
+FILE=malloc://1024
+ARGS=
+CMDS='
+e asm.filter=0
+e asm.arch=arm
+e asm.bits=64
+wx fa67bba9
+pd 1
+'
+EXPECT="            0x00000000      fa67bba9       stp x26, x25, [sp, -0x50]!  ; 'P'
+"
+run_test
+
+exit 0
+
 NAME='ASCII Recognition'
 FILE=malloc://1024
 ARGS=
 CMDS='
+e asm.arch=x86
+e asm.bits=32
 e scr.columns = 90
 wx ba3d000000
 pd 1
 '
-EXPECT="           0x00000000    ba3d000000     mov edx, 0x3d                  ; '='
+EXPECT="            0x00000000      ba3d000000     mov edx, 0x3d               ; '='
 "
 run_test
 
@@ -19,11 +52,13 @@ FILE=../bins/elf/main
 ARGS=
 CMDS='
 e asm.arch = x86
+e asm.arch=x86
+e asm.bits=32
 e scr.columns = 90
 aa
 pd 1 @ 0x0040050a
 '
-EXPECT='|          0x0040050a    bfc4054000     mov edi, str.Hello_World       ; "Hello World" @ 0x4005c4
+EXPECT='|           0x0040050a      bfc4054000     mov edi, str.Hello_World    ; "Hello World" @ 0x4005c4
 '
 run_test
 
@@ -31,29 +66,33 @@ NAME='String udis86'
 FILE=../bins/elf/main
 ARGS=
 CMDS='e asm.arch = x86.udis
+e asm.arch=x86
+e asm.bits=32
 e scr.columns = 90
 aa
 pd 1 @ 0x0040050a
 '
-EXPECT='|          0x0040050a    bfc4054000     mov edi, str.Hello_World       ; "Hello World" @ 0x4005c4
+EXPECT='|           0x0040050a      bfc4054000     mov edi, str.Hello_World    ; "Hello World" @ 0x4005c4
 '
 run_test
 
 NAME='pD -10'
 FILE=malloc://1024
 CMDS='
+e asm.arch=x86
+e asm.bits=64
 wx 90909090909090909090 ; s 10 ; pD -10
 '
-EXPECT='           0x00000000    90             nop
-           0x00000001    90             nop
-           0x00000002    90             nop
-           0x00000003    90             nop
-           0x00000004    90             nop
-           0x00000005    90             nop
-           0x00000006    90             nop
-           0x00000007    90             nop
-           0x00000008    90             nop
-           0x00000009    90             nop
+EXPECT='            0x00000000      90             nop
+            0x00000001      90             nop
+            0x00000002      90             nop
+            0x00000003      90             nop
+            0x00000004      90             nop
+            0x00000005      90             nop
+            0x00000006      90             nop
+            0x00000007      90             nop
+            0x00000008      90             nop
+            0x00000009      90             nop
 '
 
 run_test
@@ -62,18 +101,20 @@ NAME='pd -10'
 FILE=malloc://1024
 BROKEN=
 CMDS='
+e asm.arch=x86
+e asm.bits=64
 wx 90909090909090909090 ; s 10 ; pd -10
 '
-EXPECT='           0x00000000    90             nop
-           0x00000001    90             nop
-           0x00000002    90             nop
-           0x00000003    90             nop
-           0x00000004    90             nop
-           0x00000005    90             nop
-           0x00000006    90             nop
-           0x00000007    90             nop
-           0x00000008    90             nop
-           0x00000009    90             nop
+EXPECT='            0x00000000      90             nop
+            0x00000001      90             nop
+            0x00000002      90             nop
+            0x00000003      90             nop
+            0x00000004      90             nop
+            0x00000005      90             nop
+            0x00000006      90             nop
+            0x00000007      90             nop
+            0x00000008      90             nop
+            0x00000009      90             nop
 '
 run_test
 
@@ -82,6 +123,8 @@ NAME='pda 10'
 FILE=malloc://1024
 BROKEN=
 CMDS='
+e asm.arch=x86
+e asm.bits=64
 wx 90909090909090909090 ; pda 10
 '
 EXPECT='0x00000000               90  nop
@@ -98,3 +141,98 @@ EXPECT='0x00000000               90  nop
 run_test
 
 
+NAME='pdfline'
+FILE=malloc://1024
+BROKEN=
+CMDS='
+e asm.arch=x86
+e asm.bits=64
+e anal.eobjmp=true
+wx ff2572962100
+af
+pdf~jmp[0]
+afi~size[1]
+'
+EXPECT='\
+6
+'
+run_test
+
+NAME='pdfline 2'
+FILE=malloc://1024
+BROKEN=1
+CMDS='
+e asm.arch=x86
+e asm.bits=64
+e anal.eobjmp=false
+wx ff2572962100
+af
+afi~size[1]
+'
+EXPECT='6
+'
+run_test
+
+NAME='pdfline defaults'
+FILE=malloc://1024
+BROKEN=1
+CMDS='
+e asm.arch=x86
+e asm.bits=64
+wa jmp rax
+af
+afi~size[1]
+'
+EXPECT='2
+'
+run_test
+
+NAME='pd asm.bytes and asm.lbytes'
+FILE=malloc://1024
+BROKEN=
+CMDS='e asm.arch=x86
+e asm.bits=64
+wx 488d85c0f9ffff488985b8f9ffff4585f6
+e asm.lines = false
+e asm.lbytes = true
+e asm.nbytes = 6
+pd 3
+e asm.nbytes = 10
+pd 3
+e asm.lbytes = false
+pd 3
+e asm.nbytes = 6
+pd 3
+'
+EXPECT=' 0x00000000      488d85c0f9ff.  lea rax, [rbp - 0x640]
+ 0x00000007      488985b8f9ff.  mov qword [rbp - 0x648], rax
+ 0x0000000e      4585f6         test r14d, r14d
+ 0x00000000      488d85c0f9ffff         lea rax, [rbp - 0x640]
+ 0x00000007      488985b8f9ffff         mov qword [rbp - 0x648], rax
+ 0x0000000e      4585f6                 test r14d, r14d
+ 0x00000000              488d85c0f9ffff  lea rax, [rbp - 0x640]
+ 0x00000007              488985b8f9ffff  mov qword [rbp - 0x648], rax
+ 0x0000000e                      4585f6  test r14d, r14d
+ 0x00000000       488d85c0f9ff.  lea rax, [rbp - 0x640]
+ 0x00000007       488985b8f9ff.  mov qword [rbp - 0x648], rax
+ 0x0000000e              4585f6  test r14d, r14d
+'
+run_test
+
+NAME='pd asm.relsub'
+FILE=malloc://1024
+ARGS="-m 0x400000"
+BROKEN=
+CMDS='e asm.arch=x86
+e asm.bits=64
+wx 488d0502000000
+e asm.lines=false
+e asm.comments=false
+pd 1
+e asm.relsub=true
+pd 1
+'
+EXPECT=' 0x00400000      488d05020000.  lea rax, [rip + 2]
+ 0x00400000      488d05020000.  lea rax, [0x400009]
+'
+run_test

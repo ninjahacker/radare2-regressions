@@ -9,7 +9,7 @@ FILE=-
 IGNORE_ERR=1
 ARGS=
 CMDS='rm /tmp/tiny64.mach0
-!rabin2 -c mach064:cc -a x86 -b 64 /tmp/tiny64.mach0
+!rabin2 -C mach064:cc -a x86 -b 64 /tmp/tiny64.mach0
 ls -l /tmp/tiny64.mach0~[3]
 rm /tmp/tiny64.mach0
 '
@@ -18,12 +18,11 @@ EXPECT='369
 run_test
 
 NAME='create mach0 x86-64 auto-mach064'
-BROKEN=1
 FILE=-
 IGNORE_ERR=1
 ARGS=
 CMDS='rm /tmp/tiny64.mach0
-!rabin2 -c mach0:cc -a x86 -b 64 /tmp/tiny64.mach0
+!rabin2 -C mach064:cc -a x86 -b 64 /tmp/tiny64.mach0
 ls -l /tmp/tiny64.mach0~[3]
 rm /tmp/tiny64.mach0
 '
@@ -36,7 +35,7 @@ FILE=-
 IGNORE_ERR=1
 ARGS=
 CMDS='rm /tmp/tiny32.mach0
-!rabin2 -c mach0:cc -a x86 -b 32 /tmp/tiny32.mach0
+!rabin2 -C mach0:cc -a x86 -b 32 /tmp/tiny32.mach0
 ls -l /tmp/tiny32.mach0~[3]
 rm /tmp/tiny32.mach0
 '

@@ -19,3 +19,31 @@ EXPECT='
 '
 
 run_test
+
+
+FILE=../../bins/elf/x86-helloworld-gcc
+IGNORE_ERR=1
+CMDS='
+b 0x100
+e search.from = 0x08048301
+e search.to = 0x8048390
+/x b4960408ffd0c9c3
+'
+EXPECT='0x08048362 hit0_0 b4960408ffd0c9c3
+'
+
+run_test
+
+# NOTE: this test fails because the hit is in the middle of two buffers
+FILE=../../bins/elf/x86-helloworld-gcc
+IGNORE_ERR=1
+CMDS='
+b 100
+e search.from = 0x08048301
+e search.to = 0x8048390
+/x b4960408ffd0c9c3
+'
+EXPECT='0x08048362 hit0_0 b4960408ffd0c9c3
+'
+
+run_test

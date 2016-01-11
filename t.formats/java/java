@@ -15,3 +15,14 @@ CMDS='pd 10 >/dev/null
 EXPECT=''
 run_test
 
+NAME='java switch crash'
+IGNORE_ERR=1
+BROKEN=
+FILE=../../bins/java/zin7a5.class
+ARGS=
+CMDS='e scr.null=true
+pd 100
+'
+EXPECT=''
+run_test
+

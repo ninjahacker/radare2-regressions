@@ -1,0 +1,15 @@
+for a in . .. ../.. ; do [ -e $a/tests.sh ] && . $a/tests.sh ; done
+
+PLUGIN=avr
+
+NAME="avr functions"
+BROKEN=1
+FILE=../../bins/firmware/arduino_avr.bin
+CMDS="
+aaa
+axt 0x28a
+"
+EXPECT='C 0x00000328 jmp fcn.0000029e
+'
+run_test
+

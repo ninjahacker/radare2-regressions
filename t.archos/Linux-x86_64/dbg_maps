@@ -1,0 +1,45 @@
+#!/bin/sh
+# GPL 3+ - Copyright (C) 2014-2015  pancake
+
+for a in . .. ../.. ; do [ -e $a/tests.sh ] && . $a/tests.sh ; done
+
+NAME='dbg.maps'
+FILE=../../bins/elf/elf-nx
+ARGS=-d
+BROKEN=
+CMDS='dm~?/
+dk 9'
+EXPECT='4
+'
+IGNORE_ERR=1
+run_test
+
+NAME='dbg.maps'
+FILE=../../bins/elf/elf-nx
+ARGS=-d
+CMDS='dm~?
+dk 9'
+EXPECT='7
+'
+IGNORE_ERR=1
+run_test
+
+NAME='dbg.modules'
+FILE=../../bins/elf/elf-nx
+ARGS=-d
+BROKEN=
+CMDS='dmm~?'
+EXPECT='2
+'
+IGNORE_ERR=1
+run_test
+
+NAME='dbg.curmod'
+FILE=../../bins/elf/elf-nx
+ARGS=-d
+BROKEN=
+CMDS='dmm.~?'
+EXPECT='1
+'
+IGNORE_ERR=1
+run_test

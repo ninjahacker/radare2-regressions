@@ -24,7 +24,7 @@ e asm.bits=64
 wx b8010000004839ca7f
 pij 3
 '
-EXPECT='[{"offset":0,"fcn_addr":0,"fcn_last":0,"size":5,"opcode":"mov eax, 1","bytes":"b801000000","type":"mov","type_num":9,"type2_num":0},{"offset":5,"fcn_addr":0,"fcn_last":0,"size":3,"opcode":"cmp rdx, rcx","bytes":"4839ca","type":"cmp","type_num":15,"type2_num":0},{"offset":8,"fcn_addr":0,"fcn_last":0,"size":2,"opcode":"jg 0xa","bytes":"7f00","type":"cjmp","type_num":2147483649,"type2_num":0,"jump":10,"fail":10}]
+EXPECT='[{"offset":0,"fcn_addr":0,"fcn_last":0,"size":5,"opcode":"mov eax, 1","bytes":"b801000000","family":"cpu","type":"mov","type_num":9,"type2_num":0},{"offset":5,"fcn_addr":0,"fcn_last":0,"size":3,"opcode":"cmp rdx, rcx","bytes":"4839ca","family":"cpu","type":"cmp","type_num":15,"type2_num":0},{"offset":8,"fcn_addr":0,"fcn_last":0,"size":2,"opcode":"jg 0xa","bytes":"7f00","family":"cpu","type":"cjmp","type_num":2147483649,"type2_num":0,"jump":10,"fail":10}]
 '
 run_test
 
@@ -96,4 +96,61 @@ nop
 nop
 '
 
+run_test
+
+NAME='pif bsz'
+FILE=malloc://1024
+CMDS='
+e asm.arch=x86
+e asm.bits=64
+wx 5b415c415d415e415f5dc3
+af
+b 2
+pif
+'
+EXPECT='pop rbx
+pop r12
+pop r13
+pop r14
+pop r15
+pop rbp
+ret
+'
+run_test
+
+NAME='pi~?'
+FILE=malloc://1024
+CMDS='
+pi 200~?
+pi 200~?
+pd 200~?
+'
+EXPECT='200
+200
+200
+'
+run_test
+
+NAME='tmpbits'
+CMDS='
+e asm.arch=x86
+e asm.bits=64
+p8 1 @b:32
+e asm.bits
+'
+EXPECT='00
+64
+'
+run_test
+
+NAME='tmpbits'
+CMDS='
+e asm.arch=x86
+e asm.bits=32
+p8 1 @b:64
+e asm.bits
+'
+EXPECT='00
+32
+'
 run_test

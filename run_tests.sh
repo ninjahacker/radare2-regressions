@@ -19,9 +19,9 @@
 
 cd `dirname $0` 2>/dev/null
 
-r2 -v
+radare2 -v
 if [ $? != 0 ]; then
-	echo "Cannot find r2"
+	echo "Cannot find radare2"
 	exit 1
 fi
 
@@ -44,9 +44,9 @@ trap control_c 2
 
 . ./tests.sh
 
-r2 > /dev/null
+radare2 > /dev/null
 if [ $? != 0 ]; then
-  echo "Cannot find r2"
+  echo "Cannot find radare2"
   exit 1
 fi
 
@@ -60,41 +60,33 @@ if [ -f "$T" -a -x "$T" ]; then
   cd $BDIR
   . ./$FILE
 else
-cd $T || die "t/ doesn't exist"
-for file in * ; do
-   [ "$file" = '*' ] && break
-   if [ -d "$file" ]; then
-      cd $file
-      for file2 in *; do
-         [ "$file2" = '*' ] && break
-         TEST_NAME=$(echo "${file2}" | sed 's/.sh$//')
-	 NAME=`basename $file2`
-         TEST_NAME=$file
-         if [ -f "${file2}" ]; then
-           . ./${file2}
-         fi
-      done
-      cd ..
-   elif [ ! -x "$file" ]; then	# Only run files marked as executable.
-      print_found_nonexec "$file"
-   else
-      NAME=`basename $file`
-      TEST_NAME=$NAME
-      . ./${file}
-   fi
-done
+    cd $T || die "t/ doesn't exist"
+
+    do_tests_recurse() {
+        # Tests are run recursively
+        for i in "$1"/*; do
+            if [ -d "$i" ]; then
+                cd ${i}
+                do_tests_recurse "."
+                cd ..
+            elif [ -f "$i" ]; then
+                if [ ! -x "$i" ]; then	# Only run files marked as executable.
+                    print_found_nonexec "$i"
+                else
+                    NAME=`basename $i`
+                    TEST_NAME=${NAME}
+                    . ./${i}
+                fi
+            fi
+        done
+    }
+
+    do_tests_recurse "."
 fi
 
 print_report
 
-# Save statistics
-cd $R
-V=`r2 -v 2>/dev/null| grep ^rada| awk '{print $5}'`
-touch stats.csv
-grep -v "^$V" stats.csv > .stats.csv
-echo "$V,${TESTS_SUCCESS},${TESTS_FIXED},${TESTS_BROKEN},${TESTS_FAILED},${TESTS_FATAL},${FAILED}" >> .stats.csv
-sort .stats.csv > stats.csv
-rm -f .stats.csv
+save_stats
 
 # Exit codes, as documented in README.md
 if [ "${TESTS_FATAL}" -gt 0 ]; then

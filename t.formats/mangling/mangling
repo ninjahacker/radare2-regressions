@@ -456,4 +456,46 @@ CMDS='"!rabin2 -D msvc ??\$MyTemplateFunction@VClass1@@@Class1@@QAEXPAV0@@Z"'
 EXPECT='public: void __thiscall Class1::MyTemplateFunction<class Class1>(class Class1 *)
 '
 run_test
+
+NAME='void __cdecl f1(union UNION_TEST::UNION_TEST,union UNION_TEST::UNION_TEST) test'
+BROKEN=
+ARGS=
+CMDS='"!rabin2 -D msvc ?f1@@YAXTUNION_TEST@1@0@Z"'
+EXPECT='void __cdecl f1(union UNION_TEST::UNION_TEST, union UNION_TEST::UNION_TEST)
+'
+run_test
+
+NAME='void __cdecl f2(union UNION_TEST::UNION_TEST,class TEST::TEST,union UNION_TEST::UNION_TEST) test'
+BROKEN=
+ARGS=  
+CMDS='"!rabin2 -D msvc ?f2@@YAXTUNION_TEST@1@VTEST@2@0@Z"'
+EXPECT='void __cdecl f2(union UNION_TEST::UNION_TEST, class TEST::TEST, union UNION_TEST::UNION_TEST)
+'
+run_test
+
+NAME='void __cdecl f3(union UNION_TEST_NEW) test'
+BROKEN=
+ARGS=  
+CMDS='"!rabin2 -D msvc ?f3@@YAXTUNION_TEST_NEW@@@Z"'
+EXPECT='void __cdecl f3(union UNION_TEST_NEW)
+'
+run_test
+
+NAME='void __cdecl f4(union NAMESPACE_1::NAMESPACE_2::UNION_NAMESPACE_2,class TEST::TEST,union UNION_TEST::UNION_TEST) test'
+BROKEN=
+ARGS=  
+CMDS='"!rabin2 -D msvc ?f4@@YAXTUNION_NAMESPACE_2@NAMESPACE_2@NAMESPACE_1@@VTEST@4@TUNION_TEST@5@@Z"'
+EXPECT='void __cdecl f4(union NAMESPACE_1::NAMESPACE_2::UNION_NAMESPACE_2, class TEST::TEST, union UNION_TEST::UNION_TEST)
+'
+run_test
+
+NAME='void __cdecl f5(union NAMESPACE_1::UNION_TEST::UNION_TEST,class TEST::TEST,union UNION_TEST::UNION_TEST) test'
+BROKEN=
+ARGS=  
+CMDS='"!rabin2 -D msvc ?f5@@YAXTUNION_TEST@1NAMESPACE_1@@VTEST@3@T11@@Z"'
+EXPECT='void __cdecl f5(union NAMESPACE_1::UNION_TEST::UNION_TEST, class TEST::TEST, union UNION_TEST::UNION_TEST)
+'
+run_test
+
+
 #?var_int_ptr_restrict@@3PEIAHEIA

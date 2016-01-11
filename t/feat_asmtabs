@@ -14,7 +14,7 @@ e asm.lines=0
 wx 410fb744245883f80c
 pd 2
 '
-EXPECT=" 0x00000000    410fb7442458   movzx   eax,    word [r12 + 0x58]
- 0x00000006    83f80c         cmp     eax,    0xc
+EXPECT=" 0x00000000      410fb7442458   movzx   eax,    word [r12 + 0x58]
+ 0x00000006      83f80c         cmp     eax,    0xc
 "
 run_test

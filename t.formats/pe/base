@@ -11,8 +11,13 @@ run_test
 NAME='Relocs'
 FILE=../../bins/pe/base.exe
 ARGS=''
+BROKEN=
 CMDS='e asm.functions = false
-pd 1 @ 0x0040128d~!reloc'
-EXPECT=''
-
+e asm.comments = false
+e asm.bytes = false
+e asm.offset = false
+e asm.calls = false
+pd 1 @ 0x0040128d'
+EXPECT='               call dword [sym.imp.msvcrt.dll___set_app_type]
+'
 run_test

@@ -10,3 +10,17 @@ p8 4 @ 0x999999999
 EXPECT='ffffffff
 '
 run_test
+
+NAME="io ff based on seek"
+BROKEN=1
+FILE=../bins/pe/b.exe
+CMDS='
+s 0x0040200b
+p8 10
+s +1
+p8 10
+'
+EXPECT='00000000000000000000
+00000000000000000000
+'
+run_test

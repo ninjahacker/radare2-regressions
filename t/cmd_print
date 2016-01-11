@@ -1,0 +1,20 @@
+#!/bin/sh
+# GPL 3+ - Copyright (C) 2011-2012  pancake, Edd Barrett, Simon Ruderich
+[ -e tests.sh ] && . ./tests.sh || . ../tests.sh
+
+# "!" - run commands (via system)
+
+NAME='print raw lines'
+FILE=../files/projects/resetc64
+ARGS=
+BROKEN=
+CMDS='
+sl 5
+prl 1~[0]
+e lines.abs=true
+prl 1~[0]
+'
+EXPECT='+1
+5
+'
+run_test
