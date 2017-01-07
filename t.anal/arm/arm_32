@@ -122,3 +122,35 @@ EXPECT="/ (fcn) fcn.00000000 16
 \           0x0000000c      1eff2fe1       bx lr
 "
 run_test
+
+
+NAME="arm32 blx switches bits"
+BROKEN=true
+FILE=malloc://512
+CMDS="
+e asm.arch=arm
+e asm.bits=32
+wx fffffffa 04210924
+af
+pi 2 @4
+"
+EXPECT="movs r1, 4
+movs r4, 9
+"
+run_test
+
+
+NAME="arm32 bx switches bits on odd location"
+BROKEN=true
+FILE=malloc://512
+CMDS="
+e asm.arch=arm
+e asm.bits=32
+wx 0910 a0e3 11ff 2fe1 0421 0924
+af
+pi 2 @8
+"
+EXPECT="movs r1, 4
+movs r4, 9
+"
+run_test
