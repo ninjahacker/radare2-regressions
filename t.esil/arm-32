@@ -636,8 +636,12 @@ ar r3=0
 wx 042083e5aabbccddeeff
 aes
 p8 4 @4
+ar r2
+ar r3
 '
 EXPECT='efbeadde
+0xdeadbeef
+0x00000000
 '
 run_test
 
@@ -652,8 +656,12 @@ ar r3=0
 wx 052083e5aabbccddeeff
 aes
 p8 4 @5
+ar r2
+ar r3
 '
 EXPECT='efbeadde
+0xdeadbeef
+0x00000000
 '
 run_test
 
@@ -671,11 +679,16 @@ ar r1=2
 wx 012083e7aabbccddeeff
 aes
 p8 4 @6
+ar r2
+ar r3
+ar r1
 '
 EXPECT='efbeadde
+0xdeadbeef
+0x00000004
+0x00000002
 '
 run_test
-# Note: shift did not happen! Works in LDR.
 
 # STR/LDR cycle
 NAME="str r2, [r3, r1]; ldr r2, [r3, r1]"
@@ -691,8 +704,1398 @@ wx 012083e7012093e7aabbccddeeff11223344
 aes
 aes
 ar r2
+ar r3
+ar r1
 '
 EXPECT='0xdeadbeef
+0x00000008
+0x00000004
 '
 run_test
-# LDR shifts but STR does not
+
+NAME="str r1, [r2, r3, lsl 1]"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar r1=0xdeadbeef
+ar r2=4
+ar r3=2
+wx 831082e7aabbccddeeff
+aes
+p8 4 @8
+ar r1
+ar r2
+ar r3
+'
+EXPECT='efbeadde
+0xdeadbeef
+0x00000004
+0x00000002
+'
+run_test
+
+NAME="str r1, [r2, r3, lsr 1]"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar r1=0xdeadbeef
+ar r2=4
+ar r3=2
+wx a31082e7aabbccddeeff
+aes
+p8 4 @5
+ar r1
+ar r2
+ar r3
+'
+EXPECT='efbeadde
+0xdeadbeef
+0x00000004
+0x00000002
+'
+run_test
+
+NAME="str r1, [r2, r3, asr 1]"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar r1=0xdeadbeef
+ar r2=4
+ar r3=2
+wx c31082e7aabbccddeeff
+aes
+p8 4 @5
+ar r1
+ar r2
+ar r3
+'
+EXPECT='efbeadde
+0xdeadbeef
+0x00000004
+0x00000002
+'
+run_test
+
+NAME="str r1, [r2, r3, ror 23]"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar r1=0xdeadbeef
+ar r2=4
+ar r3=1
+wx e31c82e7aabbccddeeff
+aes
+p8 4 @0x84
+ar r1
+ar r2
+ar r3
+'
+EXPECT='efbeadde
+0xdeadbeef
+0x00000004
+0x00000001
+'
+run_test
+
+# STR immediate (p8 prints native endian)
+NAME="str r2, [r3], 5"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar r2=0xdeadbeef
+ar r3=0
+wx 052083e4aabbccddeeff
+aes
+p8 4 @5
+ar r2
+ar r3
+'
+EXPECT='efbeadde
+0xdeadbeef
+0x00000005
+'
+run_test
+
+
+# STR (register) (p8 prints native endian)
+NAME="str r2, [r3], r1"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar r2=0xdeadbeef
+ar r3=4
+ar r1=2
+wx 012083e6aabbccddeeff
+aes
+p8 4 @6
+ar r2
+ar r3
+ar r1
+'
+EXPECT='efbeadde
+0xdeadbeef
+0x00000006
+0x00000002
+'
+run_test
+
+NAME="str r1, [r2], r3, lsl 1"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar r1=0xdeadbeef
+ar r2=4
+ar r3=2
+wx 831082e6aabbccddeeff
+aes
+p8 4 @8
+ar r1
+ar r2
+ar r3
+'
+EXPECT='efbeadde
+0xdeadbeef
+0x00000008
+0x00000002
+'
+run_test
+
+NAME="str r1, [r2], r3, lsr 1"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar r1=0xdeadbeef
+ar r2=4
+ar r3=2
+wx a31082e6aabbccddeeff
+aes
+p8 4 @5
+ar r1
+ar r2
+ar r3
+'
+EXPECT='efbeadde
+0xdeadbeef
+0x00000005
+0x00000002
+'
+run_test
+
+NAME="str r1, [r2], r3, asr 1"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar r1=0xdeadbeef
+ar r2=4
+ar r3=2
+wx c31082e6aabbccddeeff
+aes
+p8 4 @5
+ar r1
+ar r2
+ar r3
+'
+EXPECT='efbeadde
+0xdeadbeef
+0x00000005
+0x00000002
+'
+run_test
+
+NAME="str r1, [r2], r3, ror 23"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar r1=0xdeadbeef
+ar r2=4
+ar r3=1
+wx e31c82e6aabbccddeeff
+aes
+p8 4 @0x84
+ar r1
+ar r2
+ar r3
+'
+EXPECT='efbeadde
+0xdeadbeef
+0x00000084
+0x00000001
+'
+run_test
+
+# STR immediate (p8 prints native endian)
+NAME="str r2, [r3, 5]!"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar r2=0xdeadbeef
+ar r3=0
+wx 0520a3e5aabbccddeeff
+aes
+p8 4 @5
+ar r2
+ar r3
+'
+EXPECT='efbeadde
+0xdeadbeef
+0x00000005
+'
+run_test
+
+
+# STR (register) (p8 prints native endian)
+NAME="str r2, [r3, r1]!"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar r2=0xdeadbeef
+ar r3=4
+ar r1=2
+wx 0120a3e7aabbccddeeff
+aes
+p8 4 @6
+ar r2
+ar r3
+ar r1
+'
+EXPECT='efbeadde
+0xdeadbeef
+0x00000006
+0x00000002
+'
+run_test
+
+NAME="str r1, [r2, r3, lsl 1]!"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar r1=0xdeadbeef
+ar r2=4
+ar r3=2
+wx 8310a2e7aabbccddeeff
+aes
+p8 4 @8
+ar r1
+ar r2
+ar r3
+'
+EXPECT='efbeadde
+0xdeadbeef
+0x00000008
+0x00000002
+'
+run_test
+
+NAME="str r1, [r2, r3, lsr 1]!"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar r1=0xdeadbeef
+ar r2=4
+ar r3=2
+wx a310a2e7aabbccddeeff
+aes
+p8 4 @5
+ar r1
+ar r2
+ar r3
+'
+EXPECT='efbeadde
+0xdeadbeef
+0x00000005
+0x00000002
+'
+run_test
+
+NAME="str r1, [r2, r3, asr 1]!"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar r1=0xdeadbeef
+ar r2=4
+ar r3=2
+wx c310a2e7aabbccddeeff
+aes
+p8 4 @5
+ar r1
+ar r2
+ar r3
+'
+EXPECT='efbeadde
+0xdeadbeef
+0x00000005
+0x00000002
+'
+run_test
+
+NAME="str r1, [r2, r3, ror 23]!"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar r1=0xdeadbeef
+ar r2=4
+ar r3=1
+wx e31ca2e7aabbccddeeff
+aes
+p8 4 @0x84
+ar r1
+ar r2
+ar r3
+'
+EXPECT='efbeadde
+0xdeadbeef
+0x00000084
+0x00000001
+'
+run_test
+
+# Test conditional stores. Every variant would require too many tests, so
+# just hit them all to make sure they work.
+
+NAME="streq r5, [r6, 5]"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar zf=1
+ar r5=0xdeadbeef
+ar r6=1
+wx 05508605aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='efbeadde
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="streq r5, [r6, 5] zf==0"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar zf=0
+ar r5=0xdeadbeef
+ar r6=1
+wx 05508605aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='ccddeeff
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strne r5, [r6, 5]"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar zf=0
+ar r5=0xdeadbeef
+ar r6=1
+wx 05508615aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='efbeadde
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strne r5, [r6, 5] zf==1"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar zf=1
+ar r5=0xdeadbeef
+ar r6=1
+wx 05508615aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='ccddeeff
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strhs r5, [r6, 5]"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar cf=1
+ar r5=0xdeadbeef
+ar r6=1
+wx 05508625aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='efbeadde
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strhs r5, [r6, 5] cf==0"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar cf=0
+ar r5=0xdeadbeef
+ar r6=1
+wx 05508625aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='ccddeeff
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strlo r5, [r6, 5]"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar cf=0
+ar r5=0xdeadbeef
+ar r6=1
+wx 05508635aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='efbeadde
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strlo r5, [r6, 5] cf==1"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar cf=1
+ar r5=0xdeadbeef
+ar r6=1
+wx 05508635aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='ccddeeff
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strmi r5, [r6, 5]"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar nf=1
+ar r5=0xdeadbeef
+ar r6=1
+wx 05508645aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='efbeadde
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strmi r5, [r6, 5] nf==0"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar nf=0
+ar r5=0xdeadbeef
+ar r6=1
+wx 05508645aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='ccddeeff
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strpl r5, [r6, 5]"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar nf=0
+ar r5=0xdeadbeef
+ar r6=1
+wx 05508655aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='efbeadde
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strpl r5, [r6, 5] nf==1"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar nf=1
+ar r5=0xdeadbeef
+ar r6=1
+wx 05508655aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='ccddeeff
+0xdeadbeef
+0x00000001
+'
+run_test
+
+
+NAME="strvs r5, [r6, 5]"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar vf=1
+ar r5=0xdeadbeef
+ar r6=1
+wx 05508665aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='efbeadde
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strvs r5, [r6, 5] vf==0"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar vf=0
+ar r5=0xdeadbeef
+ar r6=1
+wx 05508665aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='ccddeeff
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strvc r5, [r6, 5]"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar vf=0
+ar r5=0xdeadbeef
+ar r6=1
+wx 05508675aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='efbeadde
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strvc r5, [r6, 5] vf==1"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar vf=1
+ar r5=0xdeadbeef
+ar r6=1
+wx 05508675aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='ccddeeff
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strhi r5, [r6, 5] cf==0, zf==0"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar cf=0
+ar zf=0
+ar r5=0xdeadbeef
+ar r6=1
+wx 05508685aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='ccddeeff
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strhi r5, [r6, 5] cf==0, zf==1"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar cf=0
+ar zf=1
+ar r5=0xdeadbeef
+ar r6=1
+wx 05508685aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='ccddeeff
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strhi r5, [r6, 5] cf==1, zf==1"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar cf=1
+ar zf=1
+ar r5=0xdeadbeef
+ar r6=1
+wx 05508685aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='ccddeeff
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strhi r5, [r6, 5] zf==0 cf==1"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar cf=1
+ar zf=0
+ar r5=0xdeadbeef
+ar r6=1
+wx 05508685aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='efbeadde
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strls r5, [r6, 5] zf==1 cf==0"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar cf=0
+ar zf=1
+ar r5=0xdeadbeef
+ar r6=1
+wx 05508695aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='efbeadde
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strls r5, [r6, 5] cf==0, zf==0"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar cf=0
+ar zf=0
+ar r5=0xdeadbeef
+ar r6=1
+wx 05508695aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='ccddeeff
+0xdeadbeef
+0x00000001
+'
+run_test
+
+
+NAME="strls r5, [r6, 5] cf==1, zf==0"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar cf=1
+ar zf=0
+ar r5=0xdeadbeef
+ar r6=1
+wx 05508695aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='ccddeeff
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strls r5, [r6, 5] cf==1, zf==1"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar cf=1
+ar zf=1
+ar r5=0xdeadbeef
+ar r6=1
+wx 05508695aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='ccddeeff
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strge r5, [r6, 5] nf==1, vf==0"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar nf=1
+ar vf=0
+ar r5=0xdeadbeef
+ar r6=1
+wx 055086a5aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='ccddeeff
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strge r5, [r6, 5] nf==0, vf==1"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar nf=0
+ar vf=1
+ar r5=0xdeadbeef
+ar r6=1
+wx 055086a5aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='ccddeeff
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strge r5, [r6, 5] nf==1 vf==1"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar nf=1
+ar vf=1
+ar r5=0xdeadbeef
+ar r6=1
+wx 055086a5aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='efbeadde
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strge r5, [r6, 5] nf==0 vf==0"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar nf=0
+ar vf=0
+ar r5=0xdeadbeef
+ar r6=1
+wx 055086a5aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='efbeadde
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strlt r5, [r6, 5] nf==1 vf==0"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar nf=1
+ar vf=0
+ar r5=0xdeadbeef
+ar r6=1
+wx 055086b5aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='efbeadde
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strlt r5, [r6, 5] nf==0 vf==1"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar nf=0
+ar vf=1
+ar r5=0xdeadbeef
+ar r6=1
+wx 055086b5aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='efbeadde
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strlt r5, [r6, 5] nf==0, vf==0"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar nf=0
+ar vf=0
+ar r5=0xdeadbeef
+ar r6=1
+wx 055086b5aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='ccddeeff
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strlt r5, [r6, 5] nf==1, vf==1"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar nf=1
+ar vf=1
+ar r5=0xdeadbeef
+ar r6=1
+wx 055086b5aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='ccddeeff
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strgt r5, [r6, 5] zf==1 nf==1, vf==1"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar zf=1
+ar nf=1
+ar vf=1
+ar r5=0xdeadbeef
+ar r6=1
+wx 055086c5aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='ccddeeff
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strgt r5, [r6, 5] zf==1 nf==0, vf==1"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar zf=1
+ar nf=0
+ar vf=1
+ar r5=0xdeadbeef
+ar r6=1
+wx 055086c5aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='ccddeeff
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strgt r5, [r6, 5] zf==1 nf==0, vf==0"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar zf=1
+ar nf=0
+ar vf=0
+ar r5=0xdeadbeef
+ar r6=1
+wx 055086c5aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='ccddeeff
+0xdeadbeef
+0x00000001
+'
+run_test
+
+
+NAME="strgt r5, [r6, 5] zf==0 nf==0, vf==1"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar zf=0
+ar nf=0
+ar vf=1
+ar r5=0xdeadbeef
+ar r6=1
+wx 055086c5aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='ccddeeff
+0xdeadbeef
+0x00000001
+'
+run_test
+
+
+NAME="strgt r5, [r6, 5] zf==0 nf==1, vf==0"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar zf=0
+ar nf=1
+ar vf=0
+ar r5=0xdeadbeef
+ar r6=1
+wx 055086c5aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='ccddeeff
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strgt r5, [r6, 5] zf==0 nf==0, vf==0"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar zf=0
+ar nf=0
+ar vf=0
+ar r5=0xdeadbeef
+ar r6=1
+wx 055086c5aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='efbeadde
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strgt r5, [r6, 5] zf==0 nf==1, vf==1"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar zf=0
+ar nf=1
+ar vf=1
+ar r5=0xdeadbeef
+ar r6=1
+wx 055086c5aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='efbeadde
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strle r5, [r6, 5] zf==1 nf==1, vf==1"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar zf=1
+ar nf=1
+ar vf=1
+ar r5=0xdeadbeef
+ar r6=1
+wx 055086d5aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='ccddeeff
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strle r5, [r6, 5] zf==1 nf==0, vf==0"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar zf=1
+ar nf=0
+ar vf=0
+ar r5=0xdeadbeef
+ar r6=1
+wx 055086d5aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='ccddeeff
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strle r5, [r6, 5] zf==0 nf==0, vf==0"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar zf=0
+ar nf=0
+ar vf=0
+ar r5=0xdeadbeef
+ar r6=1
+wx 055086d5aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='ccddeeff
+0xdeadbeef
+0x00000001
+'
+run_test
+
+
+NAME="strle r5, [r6, 5] zf==0 nf==0, vf==1"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar zf=0
+ar nf=0
+ar vf=1
+ar r5=0xdeadbeef
+ar r6=1
+wx 055086d5aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='ccddeeff
+0xdeadbeef
+0x00000001
+'
+run_test
+
+
+NAME="strle r5, [r6, 5] zf==0 nf==0, vf==1"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar zf=0
+ar nf=0
+ar vf=1
+ar r5=0xdeadbeef
+ar r6=1
+wx 055086d5aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='ccddeeff
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strle r5, [r6, 5] zf==1 nf==1, vf==0"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar zf=1
+ar nf=1
+ar vf=0
+ar r5=0xdeadbeef
+ar r6=1
+wx 055086d5aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='efbeadde
+0xdeadbeef
+0x00000001
+'
+run_test
+
+NAME="strle r5, [r6, 5] zf==1 nf==0, vf==1"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar zf=1
+ar nf=0
+ar vf=1
+ar r5=0xdeadbeef
+ar r6=1
+wx 055086d5aabbccddeeff
+aes
+p8 4 @6
+ar r5
+ar r6
+'
+EXPECT='efbeadde
+0xdeadbeef
+0x00000001
+'
+run_test
