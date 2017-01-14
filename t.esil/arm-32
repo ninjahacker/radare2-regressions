@@ -218,7 +218,6 @@ EXPECT='0x40000000
 '
 run_test
 
-
 NAME='adds triggers zf'
 BROKEN=
 FILE=-
@@ -290,7 +289,6 @@ aer?cpsr
 EXPECT='0x40000000
 '
 run_test
-
 
 NAME='eors (opcode) triggers zf'
 BROKEN=
@@ -473,7 +471,6 @@ EXPECT='0x40000000
 '
 run_test
 
-
 NAME='cmp neq unchanged zf'
 FILE=-
 ARGS=
@@ -625,7 +622,6 @@ EXPECT='0xffeeddcc
 '
 run_test
 
-# STR immediate (p8 prints native endian)
 NAME="str r2, [r3, 4]"
 FILE=malloc://0x200
 CMDS='
@@ -645,7 +641,6 @@ EXPECT='efbeadde
 '
 run_test
 
-# STR immediate (p8 prints native endian)
 NAME="str r2, [r3, 5]"
 FILE=malloc://0x200
 CMDS='
@@ -665,8 +660,6 @@ EXPECT='efbeadde
 '
 run_test
 
-
-# STR (register) (p8 prints native endian)
 NAME="str r2, [r3, r1]"
 BROKEN=true
 FILE=malloc://0x200
@@ -805,7 +798,6 @@ EXPECT='efbeadde
 '
 run_test
 
-# STR immediate (p8 prints native endian)
 NAME="str r2, [r3], 5"
 BROKEN=true
 FILE=malloc://0x200
@@ -826,8 +818,6 @@ EXPECT='efbeadde
 '
 run_test
 
-
-# STR (register) (p8 prints native endian)
 NAME="str r2, [r3], r1"
 BROKEN=true
 FILE=malloc://0x200
@@ -943,7 +933,6 @@ EXPECT='efbeadde
 '
 run_test
 
-# STR immediate (p8 prints native endian)
 NAME="str r2, [r3, 5]!"
 BROKEN=true
 FILE=malloc://0x200
@@ -964,8 +953,26 @@ EXPECT='efbeadde
 '
 run_test
 
+NAME="str r2, [r3, -5]!"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar r2=0xdeadbeef
+ar r3=10
+wx 052023e5aabbccddeeff
+aes
+p8 4 @5
+ar r2
+ar r3
+'
+EXPECT='efbeadde
+0xdeadbeef
+0x00000005
+'
+run_test
 
-# STR (register) (p8 prints native endian)
 NAME="str r2, [r3, r1]!"
 BROKEN=true
 FILE=malloc://0x200
@@ -986,6 +993,29 @@ EXPECT='efbeadde
 0xdeadbeef
 0x00000006
 0x00000002
+'
+run_test
+
+NAME="str r2, [r3, r1]! (negative r1)"
+BROKEN=true
+FILE=malloc://0x200
+CMDS='
+e asm.arch=arm
+e asm.bits=32
+ar r2=0xdeadbeef
+ar r3=8
+ar r1=-2
+wx 0120a3e7aabbccddeeff
+aes
+p8 4 @6
+ar r2
+ar r3
+ar r1
+'
+EXPECT='efbeadde
+0xdeadbeef
+0x00000006
+0xfffffffe
 '
 run_test
 
